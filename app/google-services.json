@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "651411374163",
+    "project_id": "check-a320f",
+    "storage_bucket": "check-a320f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651411374163:android:2dbc6259397363f1cdc6a6",
+        "android_client_info": {
+          "package_name": "com.example.fragments"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSE-f91kLOnNVVcIXCNV733ted-unjcyQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.fragments"
+    namespace = "com.example.recipes"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.fragments"
+        applicationId = "com.example.recipes"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

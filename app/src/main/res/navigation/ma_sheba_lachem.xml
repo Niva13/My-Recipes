@@ -3,40 +3,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ma_sheba_lachem"
-    app:startDestination="@id/fragment1">
+    app:startDestination="@id/loginFrag">
 
     <fragment
-        android:id="@+id/fragment1"
-        android:name="com.example.fragments.fragments.Fragment1"
-        android:label="fragment_1"
-        tools:layout="@layout/fragment_1" >
+        android:id="@+id/newRecipesFrag"
+        android:name="com.example.recipes.fragments.NewRecipesFrag"
+        android:label="new_recipes_frag"
+        tools:layout="@layout/new_recipes_frag" >
         <action
-            android:id="@+id/action_fragment1_to_fragment2"
-            app:destination="@id/fragment2" />
-        <action
-            android:id="@+id/action_fragment1_to_fragment3"
-            app:destination="@id/fragment3" />
+            android:id="@+id/action_newRecipesFrag_to_homePageFrag"
+            app:destination="@id/homePageFrag" />
     </fragment>
     <fragment
-        android:id="@+id/fragment2"
-        android:name="com.example.fragments.fragments.Fragment2"
-        android:label="fragment_2"
-        tools:layout="@layout/fragment_2" />
-    <fragment
-        android:id="@+id/fragment3"
-        android:name="com.example.fragments.fragments.Fragment3"
-        android:label="fragment_3"
-        tools:layout="@layout/fragment_3" >
+        android:id="@+id/registerFrag"
+        android:name="com.example.recipes.fragments.RegisterFrag"
+        android:label="register_frag"
+        tools:layout="@layout/register_frag" >
         <action
-            android:id="@+id/action_fragment3_to_fragment1"
-            app:destination="@id/fragment1" />
-        <action
-            android:id="@+id/action_fragment3_to_fragment_4"
-            app:destination="@id/fragment_42" />
+            android:id="@+id/action_registerFrag_to_loginFrag"
+            app:destination="@id/loginFrag" />
     </fragment>
     <fragment
-        android:id="@+id/fragment_42"
-        android:name="com.example.fragments.fragments.Fragment_4"
-        android:label="fragment_4"
-        tools:layout="@layout/fragmet_4" />
+        android:id="@+id/homePageFrag"
+        android:name="com.example.recipes.fragments.HomePageFrag"
+        android:label="home_page_frag"
+        tools:layout="@layout/home_page_frag" >
+        <action
+            android:id="@+id/action_homePageFrag_to_newRecipesFrag"
+            app:destination="@id/newRecipesFrag" />
+        <action
+            android:id="@+id/action_homePageFrag_to_newRecipePicFrag"
+            app:destination="@id/newRecipePicFrag" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFrag"
+        android:name="com.example.recipes.fragments.LoginFrag"
+        android:label="login_frag"
+        tools:layout="@layout/login_frag" >
+        <action
+            android:id="@+id/action_loginFrag_to_registerFrag"
+            app:destination="@id/registerFrag" />
+        <action
+            android:id="@+id/action_loginFrag_to_homePageFrag"
+            app:destination="@id/homePageFrag" />
+    </fragment>
+    <fragment
+        android:id="@+id/newRecipePicFrag"
+        android:name="com.example.recipes.fragments.NewRecipePicFrag"
+        android:label="fragment_new_recipe_pic"
+        tools:layout="@layout/fragment_new_recipe_pic" >
+        <action
+            android:id="@+id/action_newRecipePicFrag_to_homePageFrag"
+            app:destination="@id/homePageFrag" />
+    </fragment>
 </navigation>

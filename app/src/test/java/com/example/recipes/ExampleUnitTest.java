@@ -1,4 +1,4 @@
-package com.example.fragments;
+package com.example.recipes;
 
 import org.junit.Test;
 

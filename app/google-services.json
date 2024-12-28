@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "651411374163",
-    "project_id": "check-a320f",
-    "storage_bucket": "check-a320f.firebasestorage.app"
+    "project_number": "682674634066",
+    "project_id": "my-recipes-a8291",
+    "storage_bucket": "my-recipes-a8291.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:651411374163:android:2dbc6259397363f1cdc6a6",
+        "mobilesdk_app_id": "1:682674634066:android:5129e9b79d9c87393e4e8b",
         "android_client_info": {
-          "package_name": "com.example.fragments"
+          "package_name": "com.example.recipes"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCSE-f91kLOnNVVcIXCNV733ted-unjcyQ"
+          "current_key": "AIzaSyCh4etb76HhqZWr0rIqCFouLe6QIA6TYL8"
         }
       ],
       "services": {

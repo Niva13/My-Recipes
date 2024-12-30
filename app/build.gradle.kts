@@ -34,6 +34,14 @@ android {
 
 dependencies {
 
+
+    implementation("androidx.camera:camera-camera2:1.2.0-beta01")   // Camera2 API for CameraX
+    implementation("androidx.camera:camera-lifecycle:1.2.0-beta01") // CameraX lifecycle integration
+    implementation("androidx.camera:camera-view:1.0.0-beta01")      // CameraX PreviewView component
+
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -42,7 +50,11 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+
 }

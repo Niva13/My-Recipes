@@ -21,7 +21,9 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.Toast;
 
+import com.example.recipes.Ingredient;
 import com.example.recipes.R;
+import com.example.recipes.Recepie;
 import com.example.recipes.activities.MainActivity;
 
 import java.util.ArrayList;
@@ -41,6 +43,9 @@ public class NewRecipesFrag extends Fragment {
     //private Spinner unit;
     private Spinner NumofItems;
     int Num_Of_Items=0;
+    private Recepie recipe;
+    private ArrayList<Ingredient>Ingredients;
+    private String NumOfIng;
 
 
     // TODO: Rename and change types of parameters
@@ -83,6 +88,7 @@ public class NewRecipesFrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.new_recipes_frag, container, false);
+        Ingredients = new ArrayList<Ingredient>();
         EditText RecepieTitle = view.findViewById(R.id.EtRecipeName);
         Button SaveRecipe = view.findViewById(R.id.SaveRecipe);
         Button SaveNumItems = view.findViewById(R.id.SaveNumItems);
@@ -103,8 +109,6 @@ public class NewRecipesFrag extends Fragment {
 
         UnitAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
 
-        //unit.setAdapter(UnitAdapter);
-
         SaveRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,8 +116,20 @@ public class NewRecipesFrag extends Fragment {
                 if (RecepieTitle.getText().toString().isEmpty()) {
                     Toast.makeText(NewRecipesFrag.this.getContext(),"You need to write the title of the recepie",Toast.LENGTH_LONG).show();
                 } else {
-                    mainActivity.saveRecepie(RecepieTitle.getText().toString());
+
+                    int k = Integer.valueOf(NumOfIng);
+
+                    for(int i=0; i<k; i++)
+                    {
+                        Ingredient ingredient = new Ingredient("A","B","C");
+                        Ingredients.add(ingredient);
+                    }
+
+                    recipe = new Recepie(RecepieTitle.getText().toString(),Ingredients);
+                    mainActivity.saveRecepie(recipe);
+
                     Navigation.findNavController(v).navigate(R.id.action_newRecipesFrag_to_homePageFrag);
+
                 }
             }
         });
@@ -127,7 +143,7 @@ public class NewRecipesFrag extends Fragment {
         NumofItems.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getItemAtPosition(position).toString();
+                NumOfIng = parent.getItemAtPosition(position).toString();
             }
 
             @Override
@@ -159,7 +175,8 @@ public class NewRecipesFrag extends Fragment {
                 Num_Of_Items=Integer.valueOf(NumofItems.getSelectedItem().toString());
                 if(hefresh != 0){
                     if((Num_Of_Items - hefresh) > 0) {
-                        for (int i = Num_Of_Items; i < (Num_Of_Items+(Num_Of_Items-hefresh)); i++) {
+                        for (int i = Num_Of_Items; i < (Num_Of_Items+(Num_Of_Items-hefresh)); i++)
+                        {
                             LinearLayout L = new LinearLayout(context);
                             L.setOrientation(LinearLayout.HORIZONTAL);
                             L.setId(i);

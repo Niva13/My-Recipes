@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="0.9"
         android:orientation="horizontal">
 
         <Button
@@ -25,21 +25,22 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="add recipe by picture" />
+
     </LinearLayout>
 
     <EditText
         android:id="@+id/ETSearchRecipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="0.95"
         android:ems="10"
-        android:inputType="text"
-        android:hint="Search Recipe" />
+        android:hint="Search Recipe"
+        android:inputType="text" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RVRecipes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="0.2" />
 
 </LinearLayout>

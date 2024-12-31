@@ -2,6 +2,7 @@ package com.example.recipes.fragments;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -17,6 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.recipes.R;
+import com.example.recipes.User;
+import com.example.recipes.activities.MainActivity;
 
 import java.util.ArrayList;
 
@@ -26,6 +29,16 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class HomePageFrag extends Fragment {
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+            }
+        });
+    }
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -80,7 +93,9 @@ public class HomePageFrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.home_page_frag, container, false);
+        MainActivity mainActivity = (MainActivity) getActivity();
         dataSet = new ArrayList<>();
+        mainActivity.readData(dataSet);
 
 
         Button AddRecipe = view.findViewById(R.id.BuAddRecipe);

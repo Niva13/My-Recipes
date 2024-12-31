@@ -4,6 +4,7 @@ import static androidx.camera.video.internal.compat.Api23Impl.build;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,9 +28,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.recipes.R;
+import com.example.recipes.Recepie;
+import com.example.recipes.User;
+import com.example.recipes.activities.MainActivity;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
@@ -60,6 +67,10 @@ public class NewRecipePicFrag extends Fragment {
     private ExecutorService cameraExecutor;
     private PreviewView previewView;
     private ImageCapture imageCapture;
+    private String picName;
+    private File photoFile;
+    private Recepie recepie;
+    private User user;
 
     public NewRecipePicFrag() {
         // Required empty public constructor
@@ -97,10 +108,11 @@ public class NewRecipePicFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_new_recipe_pic, container, false);
 
+        View view = inflater.inflate(R.layout.fragment_new_recipe_pic, container, false);
         Button uploadPic = view.findViewById(R.id.BuAddPhoto);
+        EditText recipeName = view.findViewById(R.id.EtRecipeNamePic);
+        MainActivity mainActivity = (MainActivity)getActivity();
 
         // Check for camera permissions
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
@@ -118,30 +130,40 @@ public class NewRecipePicFrag extends Fragment {
                 return;
             }
 
-            File photoFile = new File(requireContext().getExternalFilesDir(null), "photo.jpg");
+            picName = recipeName.getText().toString();
 
+            if (picName.isEmpty()) // need to check if there is another recipe with the same name.
+            {
+                Toast.makeText(NewRecipePicFrag.this.getContext(),"This name is already exist",Toast.LENGTH_LONG).show();
+            }
+            else {
+                picName = picName+".jpg";
+                photoFile = new File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), picName);
+                ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+                imageCapture.takePicture(options, cameraExecutor, new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(), "The photo has been saved!" , Toast.LENGTH_SHORT).show());
 
+                        String Name = picName.replace(".jpg", "");
+                        recepie = new Recepie(Name,photoFile.getAbsolutePath());
 
+                        try{
+                            Navigation.findNavController(view).navigate(R.id.action_newRecipePicFrag_to_homePageFrag);
+                        }catch(Exception e){
+                            Log.d("Error Navigation","there is a problem  with navigation");
+                        }
 
-            ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
-
-            imageCapture.takePicture(options, cameraExecutor, new ImageCapture.OnImageSavedCallback() {
-                @Override
-                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(requireContext(), "Photo captured: " + photoFile.getAbsolutePath(), Toast.LENGTH_SHORT).show());
-                    try{
-                        Navigation.findNavController(view).navigate(R.id.action_newRecipePicFrag_to_homePageFrag);
-                    }catch(Exception e){
-                        Log.d("Error Navigation","there is a problem  with navigation");
                     }
-                }
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        Toast.makeText(requireContext(), "Error capturing photo: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
-                @Override
-                public void onError(@NonNull ImageCaptureException exception) {
-                    Toast.makeText(requireContext(), "Error capturing photo: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+
 
         });
 

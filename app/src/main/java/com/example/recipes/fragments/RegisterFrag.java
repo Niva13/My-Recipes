@@ -94,7 +94,7 @@ public class RegisterFrag extends Fragment {
                     {
                         MainActivity mainActivity = (MainActivity) getActivity();
 
-                            mainActivity.register();
+                            mainActivity.register(view);
                     }
                     else
                     {

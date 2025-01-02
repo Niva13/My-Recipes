@@ -1,6 +1,8 @@
 package com.example.recipes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User {
 
@@ -9,68 +11,39 @@ public class User {
 
     private  String email;
 
-    private ArrayList<Recepie> recepies;
+    private Map<String, Recepie> recipes; // Map to hold recipes by name
 
-    public User()
-    {
-
+    public User() {
+        // Default constructor required for Firebase
     }
+
     public User(String phone, String email) {
-
         this.phone = phone;
-
         this.email = email;
-
-        this.recepies = new ArrayList<Recepie>();
+        this.recipes = new HashMap<>();
     }
-
-
 
     public String getPhone() {
         return phone;
     }
 
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public String getEmail() {
         return email;
     }
 
-
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public ArrayList<Recepie> getRecepies() {
-        return recepies;
+    public Map<String, Recepie> getRecipes() {
+        return recipes;
     }
 
-    public void setRecepies(ArrayList<Recepie> recepies) {
-        this.recepies = recepies;
-    }
-
-
-    public void addRecipe(Recepie recipe)
-    {
-        recepies.add(recipe);
-
-        /*if(!(recipe.getURL().isEmpty())) // Internet recipe
-        {
-
-        }
-        else if (!(recipe.getImageName().isEmpty())) // Picture recipe
-        {
-
-        }
-        else // Manually recipe
-        {
-
-        }*/
+    public void setRecipes(Map<String, Recepie> recipes) {
+        this.recipes = recipes;
     }
 }

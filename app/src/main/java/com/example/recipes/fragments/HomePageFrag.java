@@ -1,5 +1,6 @@
 package com.example.recipes.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -16,8 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.recipes.R;
+import com.example.recipes.Recepie;
 import com.example.recipes.User;
 import com.example.recipes.activities.MainActivity;
 
@@ -45,10 +48,6 @@ public class HomePageFrag extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private LinearLayoutManager layoutManager;
-    private CustomeAdapter adapter;
-    private RecyclerView Recipes;
-    private ArrayList<DataModel> dataSet;
 
 
     // TODO: Rename and change types of parameters
@@ -94,24 +93,18 @@ public class HomePageFrag extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.home_page_frag, container, false);
         MainActivity mainActivity = (MainActivity) getActivity();
-        dataSet = new ArrayList<>();
-        mainActivity.readData(dataSet);
 
 
         Button AddRecipe = view.findViewById(R.id.BuAddRecipe);
         Button AddRecipePic = view.findViewById(R.id.BuAddRecipePic);
+        Button AddRecipeUrl = view.findViewById(R.id.BuAddRecipeUrl);
+        Button Favorites = view.findViewById(R.id.BuFavorites);
+
 
         EditText SearchRecipe = view.findViewById(R.id.ETSearchRecipe);
 
-        Recipes = view.findViewById(R.id.RVRecipes);
+        mainActivity.readData(this.getContext());
 
-
-        layoutManager = new LinearLayoutManager(this.getContext());
-        Recipes.setLayoutManager(layoutManager);
-
-        Recipes.setItemAnimator(new DefaultItemAnimator());
-
-        adapter = new CustomeAdapter(this.getContext(),dataSet);
 
 
         AddRecipe.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +133,8 @@ public class HomePageFrag extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
+                mainActivity.filterList(s.toString());
+                //adapter.filter(s.toString());
             }
 
             @Override
@@ -148,6 +142,23 @@ public class HomePageFrag extends Fragment {
 
             }
         });
+
+
+        AddRecipeUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(view).navigate(R.id.action_homePageFrag_to_newRecipeUrlFrag);
+            }
+        });
+
+        Favorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(view).navigate(R.id.action_homePageFrag_to_favoritesFrag);
+            }
+        });
+
+
 
 
         return view;

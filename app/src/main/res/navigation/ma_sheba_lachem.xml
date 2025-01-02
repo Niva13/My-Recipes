@@ -34,6 +34,15 @@
         <action
             android:id="@+id/action_homePageFrag_to_newRecipePicFrag"
             app:destination="@id/newRecipePicFrag" />
+        <action
+            android:id="@+id/action_homePageFrag_to_favoritesFrag"
+            app:destination="@id/favoritesFrag" />
+        <action
+            android:id="@+id/action_homePageFrag_to_newRecipeUrlFrag"
+            app:destination="@id/newRecipeUrlFrag" />
+        <action
+            android:id="@+id/action_homePageFrag_to_showRecipeFrag"
+            app:destination="@id/showRecipeFrag" />
     </fragment>
     <fragment
         android:id="@+id/loginFrag"
@@ -56,4 +65,23 @@
             android:id="@+id/action_newRecipePicFrag_to_homePageFrag"
             app:destination="@id/homePageFrag" />
     </fragment>
+    <fragment
+        android:id="@+id/favoritesFrag"
+        android:name="com.example.recipes.fragments.FavoritesFrag"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" />
+    <fragment
+        android:id="@+id/newRecipeUrlFrag"
+        android:name="com.example.recipes.fragments.NewRecipeUrlFrag"
+        android:label="fragment_new_recipe_url"
+        tools:layout="@layout/fragment_new_recipe_url" >
+        <action
+            android:id="@+id/action_newRecipeUrlFrag_to_homePageFrag"
+            app:destination="@id/homePageFrag" />
+    </fragment>
+    <fragment
+        android:id="@+id/showRecipeFrag"
+        android:name="com.example.recipes.fragments.ShowRecipeFrag"
+        android:label="fragment_show_recipe"
+        tools:layout="@layout/fragment_show_recipe" />
 </navigation>

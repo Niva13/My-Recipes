@@ -1,7 +1,12 @@
 package com.example.recipes.activities;
+
+
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -11,12 +16,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recipes.R;
 import com.example.recipes.Recepie;
 import com.example.recipes.User;
+import com.example.recipes.fragments.CustomeAdapter;
 import com.example.recipes.fragments.DataModel;
+import com.example.recipes.fragments.HomePageFrag;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -29,15 +38,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private User theUser;
-
     private String U_id;
 
+    private RecyclerView RV;
+    private CustomeAdapter adapter;
+    private List<DataModel> DS;
 
+
+    private boolean isFirstTime = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void saveRecepie(Recepie recepie) {
 
+        //FirebaseDatabase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users").child(U_id).child("recipes").child(recepie.getName());
 
@@ -126,38 +143,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void readData(ArrayList<DataModel> dataSet) {
+    public void readData(Context context)
+    {
         // Read from the database
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         U_id = user.getUid();
 
-        DatabaseReference myRef = database.getReference("users").child(U_id);
+        DatabaseReference myRef = database.getReference("users").child(U_id).child("recipes");
+        try {
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    LinearLayoutManager layoutManager= new LinearLayoutManager(context);
+                    RecyclerView Recipes = findViewById(R.id.RVRecipes);
+                    ArrayList<DataModel> dataSet  = new ArrayList<>();
+                    Recipes.setLayoutManager(layoutManager);
+                    Recipes.setItemAnimator(new DefaultItemAnimator());
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User value = dataSnapshot.getValue(User.class);
 
-                RecyclerView RV = findViewById(R.id.RVRecipes);
-                //RV.setAdapter();
+                    if(!isFirstTime){
+                        isFirstTime = false;
+                        dataSet.clear(); // Clear the dataset to avoid duplicates
+                    }
 
+                    for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                        Map<String,Object> recepie = new HashMap<>();
+                        recepie.put(recipeSnapshot.getKey(),recipeSnapshot.getValue());
+                        if (recepie != null) {
+                            dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                        }
+                    }
+                    adapter= new CustomeAdapter(context, dataSet);
+                    Recipes.setAdapter(adapter);
+                }
 
-                /*if (value != null) {
-                    callback.onDataReceived(value);  // Pass the user data to the callback
-                }*/
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
 
-                /*TextView Hello_user = findViewById(R.id.textView);
-                Hello_user.setText("Email: "+value.getEmail());*/
-            }
+                }
+            });
+        }catch (Exception e){
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-
-            }
-        });
+        }
     }
 
+    public void filterList(String s){
+        adapter.filter(s);
+    }
+
+
+    public void getFavorite(Context c) {
+
+
+    }
 }

@@ -2,19 +2,28 @@ package com.example.recipes.fragments;
 
 import android.widget.ListView;
 
+import com.example.recipes.Recepie;
+
 public class DataModel {
 
     private String name;
-    private ListView TheRecipe;
+    private Recepie TheRecipe;
     private int _id;
+
+    private Object object;
 
     public DataModel() {
 
     }
 
-    public DataModel(String name, ListView theRecipe, int _id) {
+    public DataModel(String name,Object object){
         this.name = name;
-        TheRecipe = theRecipe;
+        this.object = object;
+    }
+
+    public DataModel(String name, Recepie theRecipe, int _id) {
+        this.name = name;
+        this.TheRecipe = theRecipe;
         this._id = _id;
     }
 
@@ -26,12 +35,12 @@ public class DataModel {
         this.name = name;
     }
 
-    public ListView getTheRecipe() {
+    public Recepie getTheRecipe() {
         return TheRecipe;
     }
 
-    public void setTheRecipe(ListView theRecipe) {
-        TheRecipe = theRecipe;
+    public void setTheRecipe(Recepie theRecipe) {
+        this.TheRecipe = theRecipe;
     }
 
     public int get_id() {
@@ -40,5 +49,13 @@ public class DataModel {
 
     public void set_id(int _id) {
         this._id = _id;
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
     }
 }

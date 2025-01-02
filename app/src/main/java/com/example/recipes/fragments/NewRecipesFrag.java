@@ -1,5 +1,7 @@
 package com.example.recipes.fragments;
 
+import static androidx.browser.customtabs.CustomTabsClient.getPackageName;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -46,7 +48,7 @@ public class NewRecipesFrag extends Fragment {
     private Recepie recipe;
     private ArrayList<Ingredient>Ingredients;
     private String NumOfIng;
-
+    private int last_id;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -81,6 +83,7 @@ public class NewRecipesFrag extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        last_id=0;
     }
 
     @Override
@@ -114,22 +117,42 @@ public class NewRecipesFrag extends Fragment {
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (RecepieTitle.getText().toString().isEmpty()) {
-                    Toast.makeText(NewRecipesFrag.this.getContext(),"You need to write the title of the recepie",Toast.LENGTH_LONG).show();
+                    Toast.makeText(NewRecipesFrag.this.getContext(),"You need to write a name of the recepie",Toast.LENGTH_LONG).show();
                 } else {
 
-                    int k = Integer.valueOf(NumOfIng);
+                    int k = last_id;
 
-                    for(int i=0; i<k; i++)
-                    {
-                        Ingredient ingredient = new Ingredient("A","B","C");
-                        Ingredients.add(ingredient);
+                    if(k!=0) {
+                        int resId1 = 0, resId2 = 0, resId3 = 0;
+                        int t = 1;
+
+                        for (int i = 1; i <= k; i++) {
+                            resId1 = t;
+                            t++;
+                            resId2 = t;
+                            t++;
+                            resId3 = t;
+                            t++;
+
+                            EditText DName = view.findViewById(resId1);
+                            EditText DAmount = view.findViewById(resId2);
+                            Spinner DUnit = view.findViewById(resId3);
+
+                            String name = DName.getText().toString();
+                            String amount = DAmount.getText().toString();
+                            String unit = DUnit.getSelectedItem().toString();
+
+                            Ingredient ingredient = new Ingredient(name, amount, unit);
+                            Ingredients.add(ingredient);
+                        }
+
+                        recipe = new Recepie(RecepieTitle.getText().toString(), Ingredients);
+                        mainActivity.saveRecepie(recipe);
+
+                        Navigation.findNavController(v).navigate(R.id.action_newRecipesFrag_to_homePageFrag);
+
+
                     }
-
-                    recipe = new Recepie(RecepieTitle.getText().toString(),Ingredients);
-                    mainActivity.saveRecepie(recipe);
-
-                    Navigation.findNavController(v).navigate(R.id.action_newRecipesFrag_to_homePageFrag);
-
                 }
             }
         });
@@ -160,11 +183,12 @@ public class NewRecipesFrag extends Fragment {
         NumofItems.setAdapter(ItemsAdapter);
 
 
-        SaveNumItems.setOnClickListener(new View.OnClickListener() {
+        SaveNumItems.setOnClickListener(new View.OnClickListener() { // FIX PROBLEM OF ID'S FOR THE XML
             @Override
             public void onClick(View v) {
                 Context context=NewRecipesFrag.this.getContext();
                 int hefresh = 0;
+
 
 
                 if(Num_Of_Items != 0){
@@ -177,26 +201,38 @@ public class NewRecipesFrag extends Fragment {
                     if((Num_Of_Items - hefresh) > 0) {
                         for (int i = Num_Of_Items; i < (Num_Of_Items+(Num_Of_Items-hefresh)); i++)
                         {
+
                             LinearLayout L = new LinearLayout(context);
                             L.setOrientation(LinearLayout.HORIZONTAL);
-                            L.setId(i);
+                            //L.setId(i);
 
+
+                            int resId1 = View.generateViewId();
+                            String generatedIdName = String.valueOf(resId1);
 
                             EditText name = new EditText(context);
-                            name.setHint("Name");
+                            name.setHint(generatedIdName);
                             name.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
+                            name.setId(resId1);
 
+
+                            int resId2 = View.generateViewId();
+                            String generatedIdAmount = String.valueOf(resId2);
 
                             EditText amount = new EditText(context);
-                            amount.setHint("Amount");
+                            amount.setHint(generatedIdAmount);
                             amount.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
                             amount.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
+                            amount.setId(resId2);
 
 
+                            int resId3 = View.generateViewId();
+                            String generatedIdSpinner = String.valueOf(resId3);
 
                             Spinner spinner = new Spinner(context);
                             spinner.setAdapter(UnitAdapter);
                             spinner.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
+                            spinner.setId(resId3);
 
 
                             L.addView(name);
@@ -212,26 +248,41 @@ public class NewRecipesFrag extends Fragment {
                     }
                 }else{
                     for (int i = 0; i < Num_Of_Items; i++) {
+
                         LinearLayout L = new LinearLayout(context);
                         L.setOrientation(LinearLayout.HORIZONTAL);
-                        L.setId(i);
+                        //L.setId(i);
 
 
-                        EditText name = new EditText(context);
-                        name.setHint("Name");
+                        int resId1 = View.generateViewId();
+                        String generatedIdName = String.valueOf(resId1);
+
+                        EditText name = new EditText(NewRecipesFrag.this.getContext());
+                        name.setHint(generatedIdName);
                         name.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
+                        name.setId(resId1);
 
 
+
+                        int resId2 = View.generateViewId();
+                        String generatedIdAmount = String.valueOf(resId2);
 
                         EditText amount = new EditText(context);
-                        amount.setHint("Amount");
+                        amount.setHint(generatedIdAmount);
                         amount.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
                         amount.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
+                        amount.setId(resId2);
 
+
+
+                        int resId3 = View.generateViewId();
+                        String generatedIdSpinner = String.valueOf(resId3);
 
                         Spinner spinner = new Spinner(context);
                         spinner.setAdapter(UnitAdapter);
                         spinner.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
+                        spinner.setId(resId3);
+
 
                         L.addView(name);
                         L.addView(amount);
@@ -241,6 +292,7 @@ public class NewRecipesFrag extends Fragment {
                     }
                 }
 
+                last_id = Num_Of_Items+last_id;
             }
         });
 

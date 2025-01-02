@@ -149,7 +149,9 @@ public class NewRecipePicFrag extends Fragment {
                         String Name = picName.replace(".jpg", "");
                         recepie = new Recepie(Name,photoFile.getAbsolutePath());
 
+
                         try{
+                            //mainActivity.saveRecepie(recepie);
                             Navigation.findNavController(view).navigate(R.id.action_newRecipePicFrag_to_homePageFrag);
                         }catch(Exception e){
                             Log.d("Error Navigation","there is a problem  with navigation");
@@ -161,6 +163,14 @@ public class NewRecipePicFrag extends Fragment {
                         Toast.makeText(requireContext(), "Error capturing photo: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+
+
+
+
+
+
+
             }
 
 

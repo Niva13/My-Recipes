@@ -1,8 +1,10 @@
 package com.example.recipes.activities;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +29,7 @@ import com.example.recipes.User;
 import com.example.recipes.fragments.CustomeAdapter;
 import com.example.recipes.fragments.DataModel;
 import com.example.recipes.fragments.HomePageFrag;
+import com.example.recipes.fragments.ShowRecipeFrag;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -50,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView RV;
     private CustomeAdapter adapter;
-    private List<DataModel> DS;
+    private List<DataModel> DS = new ArrayList<>();;
 
 
     private boolean isFirstTime = true;
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -134,48 +139,62 @@ public class MainActivity extends AppCompatActivity {
 
     public void saveRecepie(Recepie recepie) {
 
-        //FirebaseDatabase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users").child(U_id).child("recipes").child(recepie.getName());
-
-
-        myRef.setValue(recepie.getIngredients());
+        if(recepie.getIngredients()!=null) {
+            DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesM").child(recepie.getName());
+            myRef.setValue(recepie);
+        }
+        else if (recepie.getPhotoPath()!=null) {
+            DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesP").child(recepie.getName());
+            myRef.setValue(recepie);
+        }
+        else{
+            DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesURL").child(recepie.getName());
+            myRef.setValue(recepie);
+        }
     }
 
-
-    public void readData(Context context)
+    public void readData(Context context, View v)
     {
         // Read from the database
+
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         U_id = user.getUid();
 
-        DatabaseReference myRef = database.getReference("users").child(U_id).child("recipes");
+        DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesM");
+        DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesP");
+        DatabaseReference myRef2 = database.getReference("users").child(U_id).child("recipesURL");
+
         try {
+            ArrayList<DataModel> dataSet = new ArrayList<>();
+
             myRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    LinearLayoutManager layoutManager= new LinearLayoutManager(context);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(context);
                     RecyclerView Recipes = findViewById(R.id.RVRecipes);
-                    ArrayList<DataModel> dataSet  = new ArrayList<>();
+                    if (Recipes == null) {
+                        Log.e("RecyclerView Error", "RecyclerView is null in onDataChange!");
+                        return;
+                    }
                     Recipes.setLayoutManager(layoutManager);
                     Recipes.setItemAnimator(new DefaultItemAnimator());
-
-
-                    if(!isFirstTime){
+                    if (!isFirstTime) {
                         isFirstTime = false;
                         dataSet.clear(); // Clear the dataset to avoid duplicates
                     }
 
                     for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
-                        Map<String,Object> recepie = new HashMap<>();
-                        recepie.put(recipeSnapshot.getKey(),recipeSnapshot.getValue());
+                        Map<String, Object> recepie = new HashMap<>();
+                        recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
                         if (recepie != null) {
                             dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
                         }
                     }
-                    adapter= new CustomeAdapter(context, dataSet);
+
+                    adapter = new CustomeAdapter(context, dataSet);
                     Recipes.setAdapter(adapter);
                 }
 
@@ -185,7 +204,77 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
-        }catch (Exception e){
+
+            myRef1.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+                    RecyclerView Recipes = findViewById(R.id.RVRecipes);
+                    if (Recipes == null) {
+                        Log.e("RecyclerView Error", "RecyclerView is null in onDataChange!");
+                        return;
+                    }
+                    Recipes.setLayoutManager(layoutManager);
+                    Recipes.setItemAnimator(new DefaultItemAnimator());
+                    if (!isFirstTime) {
+                        isFirstTime = false;
+                        dataSet.clear(); // Clear the dataset to avoid duplicates
+                    }
+
+                    for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                        Map<String, Object> recepie = new HashMap<>();
+                        recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
+                        if (recepie != null) {
+                            dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                        }
+                    }
+                    adapter = new CustomeAdapter(context, dataSet);
+                    Recipes.setAdapter(adapter);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+
+                }
+            });
+            myRef2.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+                    RecyclerView Recipes = findViewById(R.id.RVRecipes);
+                    if (Recipes == null) {
+                        Log.e("RecyclerView Error", "RecyclerView is null in onDataChange!");
+                        return;
+                    }
+                    Recipes.setLayoutManager(layoutManager);
+                    Recipes.setItemAnimator(new DefaultItemAnimator());
+                    if (!isFirstTime) {
+                        isFirstTime = false;
+                        dataSet.clear(); // Clear the dataset to avoid duplicates
+                    }
+
+                    for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                        Map<String, Object> recepie = new HashMap<>();
+                        recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
+                        if (recepie != null) {
+                            dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                        }
+                    }
+                    adapter = new CustomeAdapter(context, dataSet);
+                    Recipes.setAdapter(adapter);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+
+                }
+            });
+            DS = dataSet;
+        }
+        catch (Exception e){
 
         }
     }

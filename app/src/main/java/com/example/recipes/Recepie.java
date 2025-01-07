@@ -23,7 +23,9 @@ public class Recepie {
         this.Name=Name;
         this.ingredients = ingredients;
     }
-    public Recepie(String URL){
+    public Recepie(String Name, String URL, String internet)
+    {
+        this.Name = Name;
         this.URL = URL;
     }
 
@@ -34,6 +36,9 @@ public class Recepie {
     public void setIngredients(ArrayList<Ingredient> ingredients) {
         this.ingredients = ingredients;
     }
+
+
+
 
     public String getName() {
         return Name;
@@ -63,5 +68,26 @@ public class Recepie {
     {
         ingredients.add(ingredient);
     }
+
+
+    /*public String getIngByString()
+    {
+        ArrayList<Ingredient> NewIngredients = new ArrayList<>();
+        NewIngredients = this.ingredients;
+
+        String stringIngredients = "";
+
+        for (Ingredient NewIngredient : NewIngredients)
+        {
+            String ingredientName = NewIngredient.getIngName();
+            String ingredientAmount = NewIngredient.getAmount();
+            String ingredientUnit = NewIngredient.getUnit();
+
+            stringIngredients = "Name: " + ingredientName + "\n" + "Amount: " + ingredientAmount + "\n" + "Unit: " + ingredientUnit + "\n\n";
+
+        }
+
+        return stringIngredients;
+    }*/
 
 }

@@ -15,6 +15,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -101,9 +103,13 @@ public class HomePageFrag extends Fragment {
         Button Favorites = view.findViewById(R.id.BuFavorites);
 
 
-        EditText SearchRecipe = view.findViewById(R.id.ETSearchRecipe);
+        WebView webView = view.findViewById(R.id.webview);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
 
-        mainActivity.readData(this.getContext());
+
+        EditText SearchRecipe = view.findViewById(R.id.ETSearchRecipe);
+        mainActivity.readData(this.getContext(), view);
 
 
 
@@ -123,6 +129,17 @@ public class HomePageFrag extends Fragment {
 
 
 
+        AddRecipeUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(view).navigate(R.id.action_homePageFrag_to_newRecipeUrlFrag);
+
+
+                //webView.loadUrl("https://en.wikipedia.org/wiki/Labrador_Retriever");
+            }
+        });
+
+
 
 
         SearchRecipe.addTextChangedListener(new TextWatcher() {
@@ -135,6 +152,7 @@ public class HomePageFrag extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mainActivity.filterList(s.toString());
                 //adapter.filter(s.toString());
+
             }
 
             @Override
@@ -144,12 +162,7 @@ public class HomePageFrag extends Fragment {
         });
 
 
-        AddRecipeUrl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(view).navigate(R.id.action_homePageFrag_to_newRecipeUrlFrag);
-            }
-        });
+
 
         Favorites.setOnClickListener(new View.OnClickListener() {
             @Override

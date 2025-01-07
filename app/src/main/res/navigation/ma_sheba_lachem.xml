@@ -83,5 +83,9 @@
         android:id="@+id/showRecipeFrag"
         android:name="com.example.recipes.fragments.ShowRecipeFrag"
         android:label="fragment_show_recipe"
-        tools:layout="@layout/fragment_show_recipe" />
+        tools:layout="@layout/fragment_show_recipe" >
+        <action
+            android:id="@+id/action_showRecipeFrag_to_homePageFrag"
+            app:destination="@id/homePageFrag" />
+    </fragment>
 </navigation>

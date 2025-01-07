@@ -3,13 +3,17 @@ package com.example.recipes.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.recipes.R;
+import com.example.recipes.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,23 +67,66 @@ public class ShowRecipeFrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_show_recipe, container, false);
+
+        super.onViewCreated(view, savedInstanceState);
+        ImageView star = view.findViewById(R.id.star);
+        final boolean[] isRated = {false};
+
         TextView recipeNameTextView = view.findViewById(R.id.RecipeName);
         TextView recipeDetailsTextView = view.findViewById(R.id.TheRecipe);
+        Button close = view.findViewById(R.id.buttonClose);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        Bundle args = getArguments();
 
-        Bundle bundle = getArguments();
+
+
+
+
+
+        if (args != null) {
+            String recipeName = args.getString("recipeName");
+            String  recipeURL = args.getString("recipeName");
+            String  recipePhotoPath = args.getString("recipeName");
+
+            // הצגת הנתונים או טעינת המתכון מ-Firebase לפי הנתונים שהתקבלו
+            recipeNameTextView.setText(recipeName);
+            recipeDetailsTextView.setText(recipeURL+ "\n" +recipePhotoPath);
+
+        }
 
 
         // Retrieve the data from the Bundle
-        if (bundle != null) {
+        /*if (bundle != null) {
             String recipeTitle = bundle.getString("recipeTitle");
             //String recipeDetails = getArguments().getString("recipeDetails");
 
             // Set the data to the views
             recipeNameTextView.setText(recipeTitle);
             //recipeDetailsTextView.setText(recipeDetails);
-        }
+        }*/
+
+
+        star.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isRated[0] = !isRated[0];
+                star.setImageResource(isRated[0] ? R.drawable.empy_star : R.drawable.yellow_star);
+
+            }
+        });
+
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(view).navigate(R.id.action_showRecipeFrag_to_homePageFrag);
+            }
+        });
+
+
 
 
         return view;
     }
+
 }

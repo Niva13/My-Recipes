@@ -50,11 +50,15 @@ public class NewRecipesFrag extends Fragment {
     private String NumOfIng;
     private int last_id;
 
+    private ArrayList<LinearLayout> linearLayers = new ArrayList<LinearLayout>();
+    int newNum_Of_Items = 0;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     public NewRecipesFrag() {
+
         // Required empty public constructor
     }
 
@@ -116,6 +120,8 @@ public class NewRecipesFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity) getActivity();
+
+
                 if (RecepieTitle.getText().toString().isEmpty()) {
                     Toast.makeText(NewRecipesFrag.this.getContext(),"You need to write a name of the recepie",Toast.LENGTH_LONG).show();
                 } else {
@@ -124,15 +130,16 @@ public class NewRecipesFrag extends Fragment {
 
                     if(k!=0) {
                         int resId1 = 0, resId2 = 0, resId3 = 0;
-                        int t = 1;
+                        int t = 0;
 
-                        for (int i = 1; i <= k; i++) {
-                            resId1 = t;
-                            t++;
-                            resId2 = t;
-                            t++;
-                            resId3 = t;
-                            t++;
+                        for (LinearLayout linearLayer: linearLayers) {
+
+                            int LID = linearLayer.getId();
+
+                            resId1 = LID+1;
+                            resId2 = LID+2;
+                            resId3 = LID+3;
+
 
                             EditText DName = view.findViewById(resId1);
                             EditText DAmount = view.findViewById(resId2);
@@ -142,15 +149,27 @@ public class NewRecipesFrag extends Fragment {
                             String amount = DAmount.getText().toString();
                             String unit = DUnit.getSelectedItem().toString();
 
-                            Ingredient ingredient = new Ingredient(name, amount, unit);
-                            Ingredients.add(ingredient);
+                            if(name.isEmpty() || amount.isEmpty() || unit.isEmpty()){
+                                Toast.makeText(NewRecipesFrag.this.getContext(), "Fill all the ingredient fields!", Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                Ingredient ingredient = new Ingredient(name, amount, unit);
+                                Ingredients.add(ingredient);
+                                t++;
+                            }
+
                         }
 
-                        recipe = new Recepie(RecepieTitle.getText().toString(), Ingredients);
-                        mainActivity.saveRecepie(recipe);
+                        if(t==linearLayers.size()) {
+                            recipe = new Recepie(RecepieTitle.getText().toString(), Ingredients);
+                            mainActivity.saveRecepie(recipe);
 
-                        Navigation.findNavController(v).navigate(R.id.action_newRecipesFrag_to_homePageFrag);
+                            Navigation.findNavController(v).navigate(R.id.action_newRecipesFrag_to_homePageFrag);
+                        }
+                        else {
 
+
+                        }
 
                     }
                 }
@@ -183,119 +202,72 @@ public class NewRecipesFrag extends Fragment {
         NumofItems.setAdapter(ItemsAdapter);
 
 
-        SaveNumItems.setOnClickListener(new View.OnClickListener() { // FIX PROBLEM OF ID'S FOR THE XML
+        SaveNumItems.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Context context=NewRecipesFrag.this.getContext();
-                int hefresh = 0;
-
-
-
-                if(Num_Of_Items != 0){
-                    hefresh = Num_Of_Items;
-                }
-
-
                 Num_Of_Items=Integer.valueOf(NumofItems.getSelectedItem().toString());
-                if(hefresh != 0){
-                    if((Num_Of_Items - hefresh) > 0) {
-                        for (int i = Num_Of_Items; i < (Num_Of_Items+(Num_Of_Items-hefresh)); i++)
-                        {
 
-                            LinearLayout L = new LinearLayout(context);
-                            L.setOrientation(LinearLayout.HORIZONTAL);
-                            //L.setId(i);
-
-
-                            int resId1 = View.generateViewId();
-                            String generatedIdName = String.valueOf(resId1);
-
-                            EditText name = new EditText(context);
-                            name.setHint(generatedIdName);
-                            name.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
-                            name.setId(resId1);
-
-
-                            int resId2 = View.generateViewId();
-                            String generatedIdAmount = String.valueOf(resId2);
-
-                            EditText amount = new EditText(context);
-                            amount.setHint(generatedIdAmount);
-                            amount.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
-                            amount.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
-                            amount.setId(resId2);
-
-
-                            int resId3 = View.generateViewId();
-                            String generatedIdSpinner = String.valueOf(resId3);
-
-                            Spinner spinner = new Spinner(context);
-                            spinner.setAdapter(UnitAdapter);
-                            spinner.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
-                            spinner.setId(resId3);
-
-
-                            L.addView(name);
-                            L.addView(amount);
-                            L.addView(spinner);
-                            ll2.addView(L);
-
-                        }
-                    }else{
-                        for(int i =hefresh-1; i>= Num_Of_Items;i--){
-                            ll2.removeView(ll2.getChildAt(i));
-                        }
-                    }
-                }else{
-                    for (int i = 0; i < Num_Of_Items; i++) {
-
+                if (Num_Of_Items > newNum_Of_Items)
+                {
+                    for(int i=newNum_Of_Items; i<Num_Of_Items; i++)
+                    {
                         LinearLayout L = new LinearLayout(context);
                         L.setOrientation(LinearLayout.HORIZONTAL);
-                        //L.setId(i);
+                        L.setId(i*4);
 
-
-                        int resId1 = View.generateViewId();
-                        String generatedIdName = String.valueOf(resId1);
-
+                        int resId1 = L.getId();
+                        resId1=resId1+1;
+                        //String generatedIdName = String.valueOf(resId1);
                         EditText name = new EditText(NewRecipesFrag.this.getContext());
-                        name.setHint(generatedIdName);
+                        name.setHint("Name");
                         name.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
                         name.setId(resId1);
 
-
-
-                        int resId2 = View.generateViewId();
-                        String generatedIdAmount = String.valueOf(resId2);
-
+                        int resId2 = L.getId();
+                        resId2=resId2+2;
+                        // generatedIdAmount = String.valueOf(resId2);
                         EditText amount = new EditText(context);
-                        amount.setHint(generatedIdAmount);
+                        amount.setHint("Amount");
                         amount.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
                         amount.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
                         amount.setId(resId2);
 
-
-
-                        int resId3 = View.generateViewId();
-                        String generatedIdSpinner = String.valueOf(resId3);
-
+                        int resId3 = L.getId();
+                        resId3=resId3+3;
                         Spinner spinner = new Spinner(context);
                         spinner.setAdapter(UnitAdapter);
                         spinner.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
                         spinner.setId(resId3);
 
-
                         L.addView(name);
                         L.addView(amount);
                         L.addView(spinner);
                         ll2.addView(L);
-
+                        linearLayers.add(L);
                     }
+                    newNum_Of_Items=Num_Of_Items;
+                    last_id=Num_Of_Items;
+                }
+                else
+                {
+                    int IdToRemove = newNum_Of_Items-1;
+                    for(int i=newNum_Of_Items-Num_Of_Items-1; i>=0; i--)
+                    {
+                        ll2.removeView(ll2.getChildAt(IdToRemove));
+
+                        if(!(linearLayers.isEmpty())) {
+                            linearLayers.remove(IdToRemove);
+                        }
+                        IdToRemove--;
+                    }
+                    newNum_Of_Items=Num_Of_Items;
+                    last_id=Num_Of_Items;
                 }
 
-                last_id = Num_Of_Items+last_id;
+
             }
         });
-
 
 
         return view;

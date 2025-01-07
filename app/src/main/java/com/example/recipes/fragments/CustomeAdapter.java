@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recipes.R;
 import com.example.recipes.activities.MainActivity;
+import com.example.recipes.fragments.DataModel;
 
 import java.util.ArrayList;
 

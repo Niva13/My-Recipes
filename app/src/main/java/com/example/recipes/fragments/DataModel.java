@@ -1,8 +1,9 @@
 package com.example.recipes.fragments;
 
-import android.widget.ListView;
-
+import com.example.recipes.Ingredient;
 import com.example.recipes.Recepie;
+
+import java.util.ArrayList;
 
 public class DataModel {
 
@@ -58,4 +59,6 @@ public class DataModel {
     public void setObject(Object object) {
         this.object = object;
     }
+
+
 }

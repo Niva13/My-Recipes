@@ -23,6 +23,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.navigation.Navigation;
 
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +57,10 @@ public class NewRecipePicFrag extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ProcessCameraProvider cameraProvider;
+
+    private boolean photoSaved = false;
+    private String RName= "";
+    private String RPath= "";
 
 
     private static final String ARG_PARAM1 = "param1";
@@ -140,6 +146,7 @@ public class NewRecipePicFrag extends Fragment {
                 picName = picName+".jpg";
                 photoFile = new File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), picName);
                 ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+
                 imageCapture.takePicture(options, cameraExecutor, new ImageCapture.OnImageSavedCallback() {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
@@ -147,35 +154,35 @@ public class NewRecipePicFrag extends Fragment {
                                 Toast.makeText(requireContext(), "The photo has been saved!" , Toast.LENGTH_SHORT).show());
 
                         String Name = picName.replace(".jpg", "");
-                        recepie = new Recepie(Name,photoFile.getAbsolutePath());
+                        String path = photoFile.getAbsolutePath();
+                        path=path.replace("\n","");
 
-
+                        recepie = new Recepie(Name,path);
                         try{
-                            //mainActivity.saveRecepie(recepie);
-                            Navigation.findNavController(view).navigate(R.id.action_newRecipePicFrag_to_homePageFrag);
+                            if(path != null)
+                            {
+                                mainActivity.saveRecepie(recepie);
+                                //Navigation.findNavController(v).navigate(R.id.action_newRecipePicFrag_to_homePageFrag);
+                                return;
+                            }
+
                         }catch(Exception e){
                             Log.d("Error Navigation","there is a problem  with navigation");
+                            return;
                         }
 
+                        Log.d("Error Debug","End of try.");
                     }
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
                         Toast.makeText(requireContext(), "Error capturing photo: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
-
-
-
-
-
-
             }
 
 
-
         });
+
 
         return view;
     }

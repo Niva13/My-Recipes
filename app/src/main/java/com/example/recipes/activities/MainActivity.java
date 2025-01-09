@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.recipes.DataCallback;
 import com.example.recipes.R;
 import com.example.recipes.Recepie;
 import com.example.recipes.User;
@@ -45,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,15 +54,15 @@ public class MainActivity extends AppCompatActivity {
     private User theUser;
     private String U_id;
 
-    private RecyclerView RV;
-    private CustomeAdapter adapter;
-    private List<DataModel> DS = new ArrayList<>();;
+
+    ArrayList<DataModel> dataSet = new ArrayList<DataModel>();
 
 
     private boolean isFirstTime = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -94,6 +97,31 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+
+
+    public void changePassword (View view)
+    {
+        String email = (((EditText) findViewById(R.id.Emailinput)).getText().toString());
+
+        if(email.isEmpty()){
+            Toast.makeText(this,"You need to enter email.",Toast.LENGTH_LONG).show();
+        }
+        else {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+
+            auth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this,"Password reset email sent.",Toast.LENGTH_LONG).show();
+                        } else {
+
+                            Toast.makeText(this,"Error: " + task.getException().getMessage(),Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+
     }
 
 
@@ -141,24 +169,34 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         if(recepie.getIngredients()!=null) {
-            DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesM").child(recepie.getName());
-            myRef.setValue(recepie);
+            if(!(dataExists(recepie.getName(), dataSet))) {
+                DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesM").child(recepie.getName());
+                myRef.setValue(recepie);
+            }else{
+                Toast.makeText(this,"there is already this name in the database",Toast.LENGTH_LONG).show();
+            }
         }
         else if (recepie.getPhotoPath()!=null) {
-            DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesP").child(recepie.getName());
-            myRef.setValue(recepie);
+            if(!(dataExists(recepie.getName(), dataSet))) {
+                DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesP").child(recepie.getName());
+                myRef.setValue(recepie);
+                Toast.makeText(this,"The photo has been saved in the database",Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(this,"there is already this name in the database",Toast.LENGTH_LONG).show();
+            }
         }
-        else{
-            DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesURL").child(recepie.getName());
-            myRef.setValue(recepie);
+        else {
+            if (!(dataExists(recepie.getName(), dataSet))) {
+                DatabaseReference myRef = database.getReference("users").child(U_id).child("recipesURL").child(recepie.getName());
+                myRef.setValue(recepie);
+            }else{
+                Toast.makeText(this,"there is already this name in the database",Toast.LENGTH_LONG).show();
+            }
         }
     }
 
-    public void readData(Context context, View v)
+    public void readData(Context context, View v, DataCallback callback)
     {
-        // Read from the database
-
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         U_id = user.getUid();
@@ -167,20 +205,61 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesP");
         DatabaseReference myRef2 = database.getReference("users").child(U_id).child("recipesURL");
 
-        try {
-            ArrayList<DataModel> dataSet = new ArrayList<>();
 
+        AtomicInteger completedRequests = new AtomicInteger(0);
+
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if (!isFirstTime) {
+                        isFirstTime = false;
+                        dataSet.clear();
+                    }
+
+                    for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                        if (!dataExists(recipeSnapshot.getKey(), dataSet)) {
+                            Recepie value = recipeSnapshot.getValue(Recepie.class);
+                            dataSet.add(new DataModel(recipeSnapshot.getKey(), value));
+                            Log.d("RecyclerView", "Added: " + recipeSnapshot.getKey());
+                        }
+                    }
+
+
+                if (completedRequests.incrementAndGet() == 3) {
+
+                    callback.onDataReady(dataSet);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("Firebase", "Failed to read value", error.toException());
+            }
+        };
+
+        try {
+            myRef.addValueEventListener(listener);
+            myRef1.addValueEventListener(listener);
+            myRef2.addValueEventListener(listener);
+        } catch (Exception e) {
+            Log.e("Firebase", "Error reading data", e);
+        }
+
+
+
+
+
+
+
+
+
+        /*try {
             myRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-                    RecyclerView Recipes = findViewById(R.id.RVRecipes);
-                    if (Recipes == null) {
-                        Log.e("RecyclerView Error", "RecyclerView is null in onDataChange!");
-                        return;
-                    }
-                    Recipes.setLayoutManager(layoutManager);
-                    Recipes.setItemAnimator(new DefaultItemAnimator());
+
                     if (!isFirstTime) {
                         isFirstTime = false;
                         dataSet.clear(); // Clear the dataset to avoid duplicates
@@ -189,13 +268,15 @@ public class MainActivity extends AppCompatActivity {
                     for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
                         Map<String, Object> recepie = new HashMap<>();
                         recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
-                        if (recepie != null) {
-                            dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                        if (recepie != null ) {
+                            if(!dataExists(recipeSnapshot.getKey(), dataSet))
+                            {
+                                dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                                Log.d("RecyclerView", "Added in myRef");
+                            }
                         }
                     }
 
-                    adapter = new CustomeAdapter(context, dataSet);
-                    Recipes.setAdapter(adapter);
                 }
 
                 @Override
@@ -209,13 +290,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-                    RecyclerView Recipes = findViewById(R.id.RVRecipes);
-                    if (Recipes == null) {
-                        Log.e("RecyclerView Error", "RecyclerView is null in onDataChange!");
-                        return;
-                    }
-                    Recipes.setLayoutManager(layoutManager);
-                    Recipes.setItemAnimator(new DefaultItemAnimator());
+
                     if (!isFirstTime) {
                         isFirstTime = false;
                         dataSet.clear(); // Clear the dataset to avoid duplicates
@@ -225,11 +300,15 @@ public class MainActivity extends AppCompatActivity {
                         Map<String, Object> recepie = new HashMap<>();
                         recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
                         if (recepie != null) {
-                            dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                            if(!dataExists(recipeSnapshot.getKey(), dataSet))
+                            {
+                                dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                                Log.d("RecyclerView", "Added in myRef1");
+                            }
                         }
                     }
-                    adapter = new CustomeAdapter(context, dataSet);
-                    Recipes.setAdapter(adapter);
+
+
                 }
 
                 @Override
@@ -242,13 +321,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-                    RecyclerView Recipes = findViewById(R.id.RVRecipes);
-                    if (Recipes == null) {
-                        Log.e("RecyclerView Error", "RecyclerView is null in onDataChange!");
-                        return;
-                    }
-                    Recipes.setLayoutManager(layoutManager);
-                    Recipes.setItemAnimator(new DefaultItemAnimator());
+
                     if (!isFirstTime) {
                         isFirstTime = false;
                         dataSet.clear(); // Clear the dataset to avoid duplicates
@@ -258,12 +331,14 @@ public class MainActivity extends AppCompatActivity {
                         Map<String, Object> recepie = new HashMap<>();
                         recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
                         if (recepie != null) {
-                            dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                            if(!dataExists(recipeSnapshot.getKey(), dataSet))
+                            {
+                                dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
+                                Log.d("RecyclerView", "Added in myRef2");
+                            }
                         }
                     }
-                    adapter = new CustomeAdapter(context, dataSet);
-                    Recipes.setAdapter(adapter);
-
+                    callback.onDataReady(dataSet);
                 }
 
                 @Override
@@ -271,18 +346,40 @@ public class MainActivity extends AppCompatActivity {
                     // Failed to read value
 
                 }
+
             });
-            DS = dataSet;
+
+
         }
         catch (Exception e){
+        }*/
+    }
 
+
+    private boolean dataExists(String recipeKey, ArrayList<DataModel> dataSet) {
+        for (DataModel model : dataSet) {
+            if (model.getName().equals(recipeKey)) {
+                return true;
+            }
         }
+        return false;
     }
 
-    public void filterList(String s){
-        adapter.filter(s);
-    }
 
+    public void getDataSet(Context context, View view, DataCallback callback) {
+        readData(context, view ,new DataCallback() {
+            @Override
+            public void onDataReady(ArrayList<DataModel> data) {
+
+                if (data != null && !data.isEmpty()) {
+                    dataSet = data;
+                    callback.onDataReady(dataSet);
+                } else {
+                    callback.onDataReady(null);
+                }
+            }
+        });
+    }
 
     public void getFavorite(Context c) {
 

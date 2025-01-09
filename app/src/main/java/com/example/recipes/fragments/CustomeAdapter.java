@@ -5,42 +5,32 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recipes.R;
-import com.example.recipes.activities.MainActivity;
-import com.example.recipes.fragments.DataModel;
 
 import java.util.ArrayList;
 
 public class CustomeAdapter extends RecyclerView.Adapter<CustomeAdapter.MyViewHolder> {
-
     private ArrayList<DataModel> dataSet;
     private ArrayList<DataModel> dataSetFull;
     private Context context;
-    public CustomeAdapter(Context context, ArrayList<DataModel> dataSet) {
+
+
+
+
+    public CustomeAdapter(Context context, ArrayList<DataModel> DATASET) {
         this.context = context;
-        this.dataSet = dataSet;
+        this.dataSet = DATASET;
         this.dataSetFull = new ArrayList<>(dataSet);
+
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textViewName;
-        ListView ItemList;
-
-        public MyViewHolder(@NonNull View itemView) {
-            super(itemView);
-            textViewName = itemView.findViewById(R.id.TvName);
-            //ItemList = itemView.findViewById(R.id.ItemList);
-        }
-    }
     @NonNull
     @Override
     public CustomeAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -50,31 +40,46 @@ public class CustomeAdapter extends RecyclerView.Adapter<CustomeAdapter.MyViewHo
         return myViewHolder;
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull CustomeAdapter.MyViewHolder holder, int position) {
-        DataModel dataModel = dataSet.get(position); // Reference the current DataModel
-        holder.textViewName.setText(dataModel.getName());
+        DataModel selectedRecipe = dataSet.get(position);
+        holder.textViewName.setText(selectedRecipe.getName());
 
-
-        // Set an OnClickListener for the itemView
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Bundle bundle = new Bundle();
-                bundle.putString("recipeName", dataModel.getName());
-                //bundle.putString("recipeDetails", dataModel.getTheRecipe().toString());
+                bundle.putString("recipeName", selectedRecipe.getName());
+                bundle.putSerializable("recipeObject", selectedRecipe.getDatamodel());
 
-
-                Navigation.findNavController(v).navigate(R.id.action_homePageFrag_to_showRecipeFrag);
+                Navigation.findNavController(v).navigate(R.id.action_homePageFrag_to_showRecipeFrag, bundle);
             }
         });
+
+
     }
+
+
 
     @Override
     public int getItemCount() {
         return dataSet.size();
     }
+
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView textViewName;
+        Object details;
+
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textViewName = itemView.findViewById(R.id.TvName);
+
+        }
+    }
+
+
 
     public void filter(String query) {
         query = query.toLowerCase().trim();  // Clean up the query
@@ -96,4 +101,5 @@ public class CustomeAdapter extends RecyclerView.Adapter<CustomeAdapter.MyViewHo
 
         notifyDataSetChanged();  // Notify the adapter to update the RecyclerView
     }
+
 }

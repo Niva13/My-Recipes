@@ -79,14 +79,26 @@ public class LoginFrag extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.login_frag, container, false);
 
+        Button button1 = view.findViewById(R.id.ChangePassword);
         Button button2 = view.findViewById(R.id.Login);
         Button button3 = view.findViewById(R.id.Reg);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+
+
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mainActivity.changePassword(v);
+            }
+        });
+
+
 
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                MainActivity mainActivity = (MainActivity) getActivity();
                 mainActivity.login(view);
             }
         });

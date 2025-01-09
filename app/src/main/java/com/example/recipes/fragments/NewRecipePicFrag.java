@@ -151,7 +151,7 @@ public class NewRecipePicFrag extends Fragment {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         requireActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), "The photo has been saved!" , Toast.LENGTH_SHORT).show());
+                                Toast.makeText(requireContext(), "Trying to save the photo in database!!" , Toast.LENGTH_SHORT).show());
 
                         String Name = picName.replace(".jpg", "");
                         String path = photoFile.getAbsolutePath();

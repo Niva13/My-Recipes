@@ -5,28 +5,24 @@ import com.example.recipes.Recepie;
 
 import java.util.ArrayList;
 
-public class DataModel {
+import java.io.Serializable;
+public class DataModel implements Serializable {
 
     private String name;
-    private Recepie TheRecipe;
-    private int _id;
 
     private Object object;
+
+    private Recepie recepie;
 
     public DataModel() {
 
     }
 
-    public DataModel(String name,Object object){
+    public DataModel(String name, Recepie recepie) {
         this.name = name;
-        this.object = object;
+        this.recepie = recepie;
     }
 
-    public DataModel(String name, Recepie theRecipe, int _id) {
-        this.name = name;
-        this.TheRecipe = theRecipe;
-        this._id = _id;
-    }
 
     public String getName() {
         return name;
@@ -36,29 +32,24 @@ public class DataModel {
         this.name = name;
     }
 
-    public Recepie getTheRecipe() {
-        return TheRecipe;
-    }
-
-    public void setTheRecipe(Recepie theRecipe) {
-        this.TheRecipe = theRecipe;
-    }
-
-    public int get_id() {
-        return _id;
-    }
-
-    public void set_id(int _id) {
-        this._id = _id;
-    }
 
     public Object getObject() {
-        return object;
+        return this.object;
     }
 
     public void setObject(Object object) {
         this.object = object;
     }
 
+    public Recepie getRecepie() {
+        return recepie;
+    }
 
+    public void setRecepie(Recepie recepie) {
+        this.recepie = recepie;
+    }
+
+    public DataModel getDatamodel(){
+        return this;
+    }
 }

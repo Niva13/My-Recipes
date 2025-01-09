@@ -1,6 +1,5 @@
 package com.example.recipes.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +19,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import com.example.recipes.DataCallback;
 import com.example.recipes.R;
-import com.example.recipes.Recepie;
-import com.example.recipes.User;
 import com.example.recipes.activities.MainActivity;
 
 import java.util.ArrayList;
@@ -34,6 +32,10 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class HomePageFrag extends Fragment {
+
+    private ArrayList<DataModel>dataset=new ArrayList<>();
+    private ArrayList<DataModel> dataSetFull;
+    private CustomeAdapter adapter;
 
     @Override
     public void onResume() {
@@ -81,11 +83,6 @@ public class HomePageFrag extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
 
     }
 
@@ -101,17 +98,48 @@ public class HomePageFrag extends Fragment {
         Button AddRecipePic = view.findViewById(R.id.BuAddRecipePic);
         Button AddRecipeUrl = view.findViewById(R.id.BuAddRecipeUrl);
         Button Favorites = view.findViewById(R.id.BuFavorites);
+        RecyclerView RecipeRecycleView = view.findViewById(R.id.RVRecipes);
 
 
-        WebView webView = view.findViewById(R.id.webview);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+
+
+        //mainActivity.readData(HomePageFrag.this.getContext(), view);
+        mainActivity.getDataSet(HomePageFrag.this.getContext(), view, new DataCallback() {
+            @Override
+            public void onDataReady(ArrayList<DataModel> data) {
+                if (data != null) {
+                    dataset = data;
+
+                    adapter = new CustomeAdapter (HomePageFrag.this.getContext(),dataset);
+
+
+
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(HomePageFrag.this.getContext());
+
+                    if (RecipeRecycleView == null) {
+
+                    }
+                    else{
+                        RecipeRecycleView.setLayoutManager(layoutManager);
+                        RecipeRecycleView.setItemAnimator(new DefaultItemAnimator());
+                        RecipeRecycleView.setAdapter(adapter);
+                    }
+
+
+
+                } else {
+
+                }
+            }
+        });
+
+
+
+
+
 
 
         EditText SearchRecipe = view.findViewById(R.id.ETSearchRecipe);
-        mainActivity.readData(this.getContext(), view);
-
-
 
         AddRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,8 +162,6 @@ public class HomePageFrag extends Fragment {
             public void onClick(View v) {
                 Navigation.findNavController(view).navigate(R.id.action_homePageFrag_to_newRecipeUrlFrag);
 
-
-                //webView.loadUrl("https://en.wikipedia.org/wiki/Labrador_Retriever");
             }
         });
 
@@ -150,8 +176,8 @@ public class HomePageFrag extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mainActivity.filterList(s.toString());
-                //adapter.filter(s.toString());
+                //mainActivity.filterList(s.toString());
+                adapter.filter(s.toString());
 
             }
 
@@ -171,9 +197,8 @@ public class HomePageFrag extends Fragment {
             }
         });
 
-
-
-
         return view;
     }
+
+
 }

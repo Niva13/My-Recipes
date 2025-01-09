@@ -1,19 +1,37 @@
 package com.example.recipes.fragments;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.recipes.Ingredient;
 import com.example.recipes.R;
+import com.example.recipes.Recepie;
 import com.example.recipes.activities.MainActivity;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,12 +71,19 @@ public class ShowRecipeFrag extends Fragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            DataModel dataModel = (DataModel) getArguments().getSerializable("recipeObject");
+
+            if (dataModel != null) {
+                String recipeName = dataModel.getName();
+                DataModel recipeDetails = dataModel.getDatamodel();
+
+            }
         }
     }
 
@@ -67,30 +92,88 @@ public class ShowRecipeFrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_show_recipe, container, false);
-
         super.onViewCreated(view, savedInstanceState);
+
         ImageView star = view.findViewById(R.id.star);
         final boolean[] isRated = {false};
 
         TextView recipeNameTextView = view.findViewById(R.id.RecipeName);
         TextView recipeDetailsTextView = view.findViewById(R.id.TheRecipe);
+        ImageView photo = view.findViewById(R.id.imageView);
+        ScrollView scrollView = view.findViewById(R.id.scrollView);
+
+
         Button close = view.findViewById(R.id.buttonClose);
-        MainActivity mainActivity = (MainActivity) getActivity();
+
+
         Bundle args = getArguments();
-
-
-
-
-
 
         if (args != null) {
             String recipeName = args.getString("recipeName");
-            String  recipeURL = args.getString("recipeName");
-            String  recipePhotoPath = args.getString("recipeName");
+            Object details = args.get("recipeObject");
 
-            // הצגת הנתונים או טעינת המתכון מ-Firebase לפי הנתונים שהתקבלו
-            recipeNameTextView.setText(recipeName);
-            recipeDetailsTextView.setText(recipeURL+ "\n" +recipePhotoPath);
+
+            DataModel model = (DataModel) details;
+            Recepie recepie = model.getRecepie();
+
+            recipeNameTextView.setText(recepie.getName());
+
+            if(!(recepie.getURL() == null))
+            {
+
+                WebView webView = view.findViewById(R.id.webview);
+                WebSettings webSettings = webView.getSettings();
+                webSettings.setJavaScriptEnabled(true);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                }
+
+                //String W = ("https://en.wikipedia.org/wiki/Labrador_Retriever");
+                String W = recepie.getURL();
+                webView.loadUrl(W);
+
+                /*webView.setWebViewClient(new WebViewClient() {
+                                    @SuppressWarnings("deprecation")
+                                    @Override
+                                    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                                        Toast.makeText(ShowRecipeFrag.this.getContext(), description, Toast.LENGTH_SHORT).show();
+                                    }
+                                    @TargetApi(android.os.Build.VERSION_CODES.M)
+                                    @Override
+                                    public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError rerr) {
+                                        // Redirect to deprecated method, so you can use it in all SDK versions
+                                        onReceivedError(view, rerr.getErrorCode(), rerr.getDescription().toString(), req.getUrl().toString());
+                                    }
+                                });*/
+
+            }else if(!(recepie.getPhotoPath() == null)){
+
+                scrollView.setVisibility(View.GONE);
+                photo.setVisibility(View.VISIBLE);
+                photo.setImageResource(R.drawable.yellow_star);
+
+
+
+            }else{
+
+                ArrayList<Ingredient> Ingredients = new ArrayList<>();
+                Ingredients = recepie.getIngredients();
+
+                for(Ingredient Ingredient : Ingredients) {
+                    recipeDetailsTextView.setText(recipeDetailsTextView.getText().toString() + Ingredient.getIngName() +" "+
+                            Ingredient.getAmount() + " " +Ingredient.getUnit() + "\n\n");
+
+
+                }
+
+            }
+
+            //String  recipePhotoPath = args.getString("recipeName");
+
+
+
+            //recipeDetailsTextView.setText(recipeURL+ "\n" +recipePhotoPath);
 
         }
 

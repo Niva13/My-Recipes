@@ -2,7 +2,9 @@ package com.example.recipes;
 
 import java.util.ArrayList;
 
-public class Recepie {
+import java.io.Serializable;
+
+public class Recepie implements Serializable{
     private ArrayList <Ingredient> ingredients;
     private String Name;
     private String photoPath;

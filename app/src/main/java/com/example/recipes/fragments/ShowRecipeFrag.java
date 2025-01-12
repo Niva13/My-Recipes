@@ -1,9 +1,15 @@
 package com.example.recipes.fragments;
 
+import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -39,6 +45,9 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class ShowRecipeFrag extends Fragment {
+
+    private ImageView photo;
+    private String photoPath;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -99,7 +108,7 @@ public class ShowRecipeFrag extends Fragment {
 
         TextView recipeNameTextView = view.findViewById(R.id.RecipeName);
         TextView recipeDetailsTextView = view.findViewById(R.id.TheRecipe);
-        ImageView photo = view.findViewById(R.id.imageView);
+        photo = view.findViewById(R.id.imageView);
         ScrollView scrollView = view.findViewById(R.id.scrollView);
 
 
@@ -133,25 +142,36 @@ public class ShowRecipeFrag extends Fragment {
                 String W = recepie.getURL();
                 webView.loadUrl(W);
 
-                /*webView.setWebViewClient(new WebViewClient() {
-                                    @SuppressWarnings("deprecation")
-                                    @Override
-                                    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                                        Toast.makeText(ShowRecipeFrag.this.getContext(), description, Toast.LENGTH_SHORT).show();
-                                    }
-                                    @TargetApi(android.os.Build.VERSION_CODES.M)
-                                    @Override
-                                    public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError rerr) {
-                                        // Redirect to deprecated method, so you can use it in all SDK versions
-                                        onReceivedError(view, rerr.getErrorCode(), rerr.getDescription().toString(), req.getUrl().toString());
-                                    }
-                                });*/
+
 
             }else if(!(recepie.getPhotoPath() == null)){
 
                 scrollView.setVisibility(View.GONE);
                 photo.setVisibility(View.VISIBLE);
-                photo.setImageResource(R.drawable.yellow_star);
+                photoPath = "file://"+recepie.getPhotoPath();
+
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        initializePhoto(view);
+                    } else {
+                        ActivityCompat.requestPermissions(requireActivity(),
+                                new String[]{Manifest.permission.READ_MEDIA_IMAGES}, 101);
+                    }
+                }
+                else {
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        initializePhoto(view);
+                    } else {
+                        ActivityCompat.requestPermissions(requireActivity(),
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+                    }
+                }
+
+
 
 
 
@@ -169,24 +189,10 @@ public class ShowRecipeFrag extends Fragment {
 
             }
 
-            //String  recipePhotoPath = args.getString("recipeName");
 
-
-
-            //recipeDetailsTextView.setText(recipeURL+ "\n" +recipePhotoPath);
 
         }
 
-
-        // Retrieve the data from the Bundle
-        /*if (bundle != null) {
-            String recipeTitle = bundle.getString("recipeTitle");
-            //String recipeDetails = getArguments().getString("recipeDetails");
-
-            // Set the data to the views
-            recipeNameTextView.setText(recipeTitle);
-            //recipeDetailsTextView.setText(recipeDetails);
-        }*/
 
 
         star.setOnClickListener(new View.OnClickListener() {
@@ -206,10 +212,28 @@ public class ShowRecipeFrag extends Fragment {
             }
         });
 
-
-
-
         return view;
     }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with accessing the image
+                initializePhoto(getView());
+            } else {
+                Toast.makeText(ShowRecipeFrag.this.getContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void initializePhoto(View view) {
+        Uri photoUri = Uri.parse(photoPath);
+        photo.setImageURI(photoUri);
+    }
+
 
 }

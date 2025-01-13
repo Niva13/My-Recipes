@@ -28,6 +28,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.recipes.DataCallback;
 import com.example.recipes.Ingredient;
 import com.example.recipes.R;
 import com.example.recipes.Recepie;
@@ -108,6 +109,7 @@ public class ShowRecipeFrag extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ImageView star = view.findViewById(R.id.star);
+        ImageView trash = view.findViewById(R.id.delete);
         //final boolean[] isRated = {false};
 
 
@@ -130,7 +132,11 @@ public class ShowRecipeFrag extends Fragment {
 
             DataModel model = (DataModel) details;
             recepie = model.getRecepie();
-
+            if(recepie.isFavorites()){
+                star.setImageResource(R.drawable.yellow_star);
+            }else{
+                star.setImageResource(R.drawable.empy_star);
+            }
             recipeNameTextView.setText(recepie.getName());
 
             if(!(recepie.getURL() == null))
@@ -205,15 +211,35 @@ public class ShowRecipeFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 isRated = !isRated;
+
+
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if(isRated){
                     star.setImageResource(R.drawable.yellow_star);
+                    recepie.setFavorites(true);
                     mainActivity.addFavoriteRecipes(recepie);
+
                 }else{
                     star.setImageResource(R.drawable.empy_star);
+                    recepie.setFavorites(false);
                     mainActivity.RemoveFavoriteRecipes(recepie);
+
                 }
 
+            }
+
+        });
+
+        trash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.DeleteRecepie(recepie, new DataCallback() {
+                    @Override
+                    public void onDataReady(ArrayList<DataModel> data) {
+                        Navigation.findNavController(v).navigate(R.id.action_showRecipeFrag_to_homePageFrag);
+                    }
+                });
             }
         });
 

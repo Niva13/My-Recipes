@@ -13,22 +13,29 @@ public class Recepie implements Serializable{
 
 
 
+    boolean isFavorites;
+
+
+
 
     public Recepie(){
-
+        this.isFavorites = false;
     }
     public Recepie(String Name, String photoPath){
         this.Name = Name;
         this.photoPath = photoPath;
+        this.isFavorites = false;
     }
     public Recepie(String Name,ArrayList<Ingredient> ingredients) {
         this.Name=Name;
         this.ingredients = ingredients;
+        this.isFavorites = false;
     }
     public Recepie(String Name, String URL, String internet)
     {
         this.Name = Name;
         this.URL = URL;
+        this.isFavorites = false;
     }
 
     public ArrayList<Ingredient> getIngredients() {
@@ -71,25 +78,13 @@ public class Recepie implements Serializable{
         ingredients.add(ingredient);
     }
 
+    public boolean isFavorites() {
+        return isFavorites;
+    }
 
-    /*public String getIngByString()
-    {
-        ArrayList<Ingredient> NewIngredients = new ArrayList<>();
-        NewIngredients = this.ingredients;
+    public void setFavorites(boolean favorites) {
+        this.isFavorites = favorites;
+    }
 
-        String stringIngredients = "";
-
-        for (Ingredient NewIngredient : NewIngredients)
-        {
-            String ingredientName = NewIngredient.getIngName();
-            String ingredientAmount = NewIngredient.getAmount();
-            String ingredientUnit = NewIngredient.getUnit();
-
-            stringIngredients = "Name: " + ingredientName + "\n" + "Amount: " + ingredientAmount + "\n" + "Unit: " + ingredientUnit + "\n\n";
-
-        }
-
-        return stringIngredients;
-    }*/
 
 }

@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean isFirstTime = true;
+    private  boolean isFirstTimeFavorites = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -228,7 +229,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if (completedRequests.incrementAndGet() == 3) {
-
                     callback.onDataReady(dataSet);
                 }
             }
@@ -287,19 +287,20 @@ public class MainActivity extends AppCompatActivity {
 
         DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites");
 
+
         AtomicInteger completedRequests = new AtomicInteger(0);
 
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (!isFirstTime) {
-                    isFirstTime = false;
+                if (!isFirstTimeFavorites) {
+                    isFirstTimeFavorites = false;
                     favorites.clear();
                 }
 
                 for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
-                    if (!dataExists(recipeSnapshot.getKey(), dataSet)) {
+                    if (!dataExists(recipeSnapshot.getKey(), favorites)) {
                         Recepie value = recipeSnapshot.getValue(Recepie.class);
                         favorites.add(new DataModel(recipeSnapshot.getKey(), value));
                         Log.d("RecyclerView", "Added: " + recipeSnapshot.getKey());
@@ -324,13 +325,24 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("Firebase", "Error reading data", e);
         }
+
     }
 
 
 
 
     public ArrayList<DataModel> getFavorite(Context c, View v, DataCallback callback) {
-        readFavorites( c,  v,  callback);
+        readFavorites(c, v, new DataCallback() {
+            @Override
+            public void onDataReady(ArrayList<DataModel> data) {
+                if (data != null && !data.isEmpty()) {
+                    favorites = data;
+                    callback.onDataReady(favorites);
+                } else {
+                    callback.onDataReady(null);
+                }
+            }
+        });
 
         return favorites;
     }
@@ -340,6 +352,17 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites").child(recepie.getName());
         myRef.setValue(recepie);
+        if(recepie.getIngredients() != null){
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesM").child(recepie.getName());
+            myRef1.setValue(recepie);
+        }else if(recepie.getPhotoPath() != null){
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesP").child(recepie.getName());
+            myRef1.setValue(recepie);
+        }else{
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesURL").child(recepie.getName());
+            myRef1.setValue(recepie);
+        }
+
 
     }
 
@@ -347,5 +370,44 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites").child(recepie.getName());
         myRef.removeValue();
+        if(recepie.getIngredients() != null){
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesM").child(recepie.getName());
+            myRef1.setValue(recepie);
+        }else if(recepie.getPhotoPath() != null){
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesP").child(recepie.getName());
+            myRef1.setValue(recepie);
+        }else{
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesURL").child(recepie.getName());
+            myRef1.setValue(recepie);
+        }
+    }
+
+    public void DeleteRecepie(Recepie recepie,DataCallback callback) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites").child(recepie.getName());
+        myRef.removeValue();
+        if(recepie.getIngredients() != null){
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesM").child(recepie.getName());
+            myRef1.removeValue();
+
+        }else if(recepie.getPhotoPath() != null){
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesP").child(recepie.getName());
+            myRef1.removeValue();
+
+        }else{
+            DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesURL").child(recepie.getName());
+            myRef1.removeValue();
+
+        }
+        deleteRecepie(recepie.getName());
+        callback.onDataReady(dataSet);
+    }
+
+    public void deleteRecepie(String name){
+        for(DataModel dataModel: dataSet){
+            if(dataModel.getRecepie().getName().equals(name)){
+                dataSet.remove(dataModel);
+            }
+        }
     }
 }

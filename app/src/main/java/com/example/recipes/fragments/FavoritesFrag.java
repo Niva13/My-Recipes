@@ -82,7 +82,7 @@ public class FavoritesFrag extends Fragment  {
         mainActivity.getFavorite(this.getContext(), view, new DataCallback() {
             @Override
             public void onDataReady(ArrayList<DataModel> data) {
-                if (data != null)
+                if (!(data.isEmpty()))
                 {
 
                     FavoriteDataSet = data;

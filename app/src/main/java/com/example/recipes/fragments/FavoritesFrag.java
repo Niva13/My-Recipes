@@ -3,20 +3,32 @@ package com.example.recipes.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.recipes.DataCallback;
 import com.example.recipes.R;
 import com.example.recipes.activities.MainActivity;
+
+import java.util.ArrayList;
+import com.example.recipes.DataCallback;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link FavoritesFrag#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavoritesFrag extends Fragment {
+public class FavoritesFrag extends Fragment  {
+
+    private ArrayList<DataModel> FavoriteDataSet;
+
+    private CustomeAdapter adapter;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -65,8 +77,31 @@ public class FavoritesFrag extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         MainActivity mainActivity = (MainActivity) getActivity();
 
-        mainActivity.getFavorite(this.getContext());
+        RecyclerView Favorite = view.findViewById(R.id.RVFavorite);
 
+        mainActivity.getFavorite(this.getContext(), view, new DataCallback() {
+            @Override
+            public void onDataReady(ArrayList<DataModel> data) {
+                if (data != null)
+                {
+
+                    FavoriteDataSet = data;
+                    adapter = new CustomeAdapter (FavoritesFrag.this.getContext(),FavoriteDataSet);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(FavoritesFrag.this.getContext());
+
+                    if (Favorite == null) {
+
+                    }
+                    else{
+                        Favorite.setLayoutManager(layoutManager);
+                        Favorite.setItemAnimator(new DefaultItemAnimator());
+                        Favorite.setAdapter(adapter);
+                    }
+
+                }
+
+            }
+        });
 
 
 

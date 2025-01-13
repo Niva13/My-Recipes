@@ -111,9 +111,6 @@ public class HomePageFrag extends Fragment {
                     dataset = data;
 
                     adapter = new CustomeAdapter (HomePageFrag.this.getContext(),dataset);
-
-
-
                     LinearLayoutManager layoutManager = new LinearLayoutManager(HomePageFrag.this.getContext());
 
                     if (RecipeRecycleView == null) {

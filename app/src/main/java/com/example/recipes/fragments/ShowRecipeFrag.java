@@ -49,6 +49,10 @@ public class ShowRecipeFrag extends Fragment {
     private ImageView photo;
     private String photoPath;
 
+    boolean isRated = false;
+    private Recepie recepie;
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -104,7 +108,8 @@ public class ShowRecipeFrag extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ImageView star = view.findViewById(R.id.star);
-        final boolean[] isRated = {false};
+        //final boolean[] isRated = {false};
+
 
         TextView recipeNameTextView = view.findViewById(R.id.RecipeName);
         TextView recipeDetailsTextView = view.findViewById(R.id.TheRecipe);
@@ -115,6 +120,7 @@ public class ShowRecipeFrag extends Fragment {
         Button close = view.findViewById(R.id.buttonClose);
 
 
+
         Bundle args = getArguments();
 
         if (args != null) {
@@ -123,7 +129,7 @@ public class ShowRecipeFrag extends Fragment {
 
 
             DataModel model = (DataModel) details;
-            Recepie recepie = model.getRecepie();
+            recepie = model.getRecepie();
 
             recipeNameTextView.setText(recepie.getName());
 
@@ -198,8 +204,15 @@ public class ShowRecipeFrag extends Fragment {
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isRated[0] = !isRated[0];
-                star.setImageResource(isRated[0] ? R.drawable.empy_star : R.drawable.yellow_star);
+                isRated = !isRated;
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if(isRated){
+                    star.setImageResource(R.drawable.yellow_star);
+                    mainActivity.addFavoriteRecipes(recepie);
+                }else{
+                    star.setImageResource(R.drawable.empy_star);
+                    mainActivity.RemoveFavoriteRecipes(recepie);
+                }
 
             }
         });

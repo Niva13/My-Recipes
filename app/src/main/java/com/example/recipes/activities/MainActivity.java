@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private User theUser;
     private String U_id;
 
+    private ArrayList<DataModel> favorites = new ArrayList<DataModel>();
 
     ArrayList<DataModel> dataSet = new ArrayList<DataModel>();
 
@@ -246,113 +247,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Firebase", "Error reading data", e);
         }
 
-
-
-
-
-
-
-
-
-        /*try {
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-
-                    if (!isFirstTime) {
-                        isFirstTime = false;
-                        dataSet.clear(); // Clear the dataset to avoid duplicates
-                    }
-
-                    for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
-                        Map<String, Object> recepie = new HashMap<>();
-                        recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
-                        if (recepie != null ) {
-                            if(!dataExists(recipeSnapshot.getKey(), dataSet))
-                            {
-                                dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
-                                Log.d("RecyclerView", "Added in myRef");
-                            }
-                        }
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-
-                }
-            });
-
-            myRef1.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-
-                    if (!isFirstTime) {
-                        isFirstTime = false;
-                        dataSet.clear(); // Clear the dataset to avoid duplicates
-                    }
-
-                    for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
-                        Map<String, Object> recepie = new HashMap<>();
-                        recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
-                        if (recepie != null) {
-                            if(!dataExists(recipeSnapshot.getKey(), dataSet))
-                            {
-                                dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
-                                Log.d("RecyclerView", "Added in myRef1");
-                            }
-                        }
-                    }
-
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-
-                }
-            });
-            myRef2.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-
-                    if (!isFirstTime) {
-                        isFirstTime = false;
-                        dataSet.clear(); // Clear the dataset to avoid duplicates
-                    }
-
-                    for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
-                        Map<String, Object> recepie = new HashMap<>();
-                        recepie.put(recipeSnapshot.getKey(), recipeSnapshot.getValue());
-                        if (recepie != null) {
-                            if(!dataExists(recipeSnapshot.getKey(), dataSet))
-                            {
-                                dataSet.add(new DataModel(recipeSnapshot.getKey(), recipeSnapshot.getValue()));
-                                Log.d("RecyclerView", "Added in myRef2");
-                            }
-                        }
-                    }
-                    callback.onDataReady(dataSet);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-
-                }
-
-            });
-
-
-        }
-        catch (Exception e){
-        }*/
     }
 
 
@@ -381,8 +275,77 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getFavorite(Context c) {
 
 
+
+
+    public void readFavorites(Context context, View v, DataCallback callback)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        U_id = user.getUid();
+
+        DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites");
+
+        AtomicInteger completedRequests = new AtomicInteger(0);
+
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (!isFirstTime) {
+                    isFirstTime = false;
+                    favorites.clear();
+                }
+
+                for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                    if (!dataExists(recipeSnapshot.getKey(), dataSet)) {
+                        Recepie value = recipeSnapshot.getValue(Recepie.class);
+                        favorites.add(new DataModel(recipeSnapshot.getKey(), value));
+                        Log.d("RecyclerView", "Added: " + recipeSnapshot.getKey());
+                    }
+                }
+
+
+                if (completedRequests.incrementAndGet() == 1) {
+
+                    callback.onDataReady(favorites);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("Firebase", "Failed to read value", error.toException());
+            }
+        };
+
+        try {
+            myRef.addValueEventListener(listener);
+        } catch (Exception e) {
+            Log.e("Firebase", "Error reading data", e);
+        }
+    }
+
+
+
+
+    public ArrayList<DataModel> getFavorite(Context c, View v, DataCallback callback) {
+        readFavorites( c,  v,  callback);
+
+        return favorites;
+    }
+
+    public void addFavoriteRecipes(Recepie recepie) {
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites").child(recepie.getName());
+        myRef.setValue(recepie);
+
+    }
+
+    public void RemoveFavoriteRecipes(Recepie recepie) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites").child(recepie.getName());
+        myRef.removeValue();
     }
 }

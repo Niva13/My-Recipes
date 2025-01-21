@@ -69,7 +69,11 @@
         android:id="@+id/favoritesFrag"
         android:name="com.example.recipes.fragments.FavoritesFrag"
         android:label="fragment_favorites"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_favoritesFrag_to_showRecipeFrag"
+            app:destination="@id/showRecipeFrag" />
+    </fragment>
     <fragment
         android:id="@+id/newRecipeUrlFrag"
         android:name="com.example.recipes.fragments.NewRecipeUrlFrag"
@@ -87,5 +91,8 @@
         <action
             android:id="@+id/action_showRecipeFrag_to_homePageFrag"
             app:destination="@id/homePageFrag" />
+        <action
+            android:id="@+id/action_showRecipeFrag_to_favoritesFrag"
+            app:destination="@id/favoritesFrag" />
     </fragment>
 </navigation>

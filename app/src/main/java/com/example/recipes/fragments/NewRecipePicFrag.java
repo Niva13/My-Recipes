@@ -1,15 +1,10 @@
 package com.example.recipes.fragments;
 
-import static androidx.camera.video.internal.compat.Api23Impl.build;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.media.MediaScannerConnection;
 import android.os.Bundle;
-
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.camera.core.Camera;
-import androidx.camera.core.CameraProvider;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -19,28 +14,20 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.navigation.Navigation;
-
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
 import com.example.recipes.R;
 import com.example.recipes.Recepie;
 import com.example.recipes.User;
 import com.example.recipes.activities.MainActivity;
 import com.google.common.util.concurrent.ListenableFuture;
-
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -140,7 +127,7 @@ public class NewRecipePicFrag extends Fragment {
 
             if (picName.isEmpty()) // need to check if there is another recipe with the same name.
             {
-                Toast.makeText(NewRecipePicFrag.this.getContext(),"This name is already exist",Toast.LENGTH_LONG).show();
+                Toast.makeText(NewRecipePicFrag.this.getContext(),"Name is Empty! Can't save",Toast.LENGTH_LONG).show();
             }
             else {
                 picName = picName+".jpg";
@@ -151,7 +138,7 @@ public class NewRecipePicFrag extends Fragment {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         requireActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), "Trying to save the photo in database!!" , Toast.LENGTH_SHORT).show());
+                                Toast.makeText(requireContext(), "Trying to save the photo in database!!" , Toast.LENGTH_LONG).show());
 
                         String Name = picName.replace(".jpg", "");
                         String path = photoFile.getAbsolutePath();
@@ -162,7 +149,6 @@ public class NewRecipePicFrag extends Fragment {
                             if(path != null)
                             {
                                 mainActivity.saveRecepie(recepie);
-                                //Navigation.findNavController(v).navigate(R.id.action_newRecipePicFrag_to_homePageFrag);
                                 return;
                             }
 
@@ -183,9 +169,18 @@ public class NewRecipePicFrag extends Fragment {
 
         });
 
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Handle back button for this fragment
+                Navigation.findNavController(view).navigate(R.id.action_newRecipePicFrag_to_homePageFrag);
+            }
+        });
 
         return view;
     }
+
+
 
     @Override
     public void onDestroy() {

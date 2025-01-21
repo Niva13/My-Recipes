@@ -10,54 +10,84 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.9"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.9"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/BuAddRecipe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/button_background"
+                android:text="add recipe manualy"
+                android:textSize="12dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="21dp"
+                android:layout_gravity="center"/>
+
+            <Button
+                android:id="@+id/BuAddRecipePic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/button_background"
+                android:text="add recipe by picture"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="12dp"
+                android:layout_gravity="center"/>
+
+            <Button
+                android:id="@+id/BuAddRecipeUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/button_background"
+                android:text="add recipe by Url"
+                android:layout_marginRight="21dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="12dp"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
 
         <Button
-            android:id="@+id/BuAddRecipe"
+            android:id="@+id/BuFavorites"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="add recipe manualy" />
+            android:layout_height="match_parent"
+            android:layout_weight="0.95"
+            android:background="@drawable/button_background"
+            android:text="favorites"
+            android:layout_marginRight="21dp"
+            android:layout_marginLeft="21dp"/>
 
-        <Button
-            android:id="@+id/BuAddRecipePic"
+        <EditText
+            android:id="@+id/ETSearchRecipe"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="add recipe by picture" />
+            android:layout_height="match_parent"
+            android:layout_weight="0.94"
+            android:background="@drawable/input_background"
+            android:ems="10"
+            android:hint="Search Recipe"
+            android:inputType="text"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="21dp"
+            android:layout_marginLeft="21dp"
+            android:gravity="center"/>
 
-        <Button
-            android:id="@+id/BuAddRecipeUrl"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RVRecipes"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="add recipe by Url" />
+            android:layout_height="match_parent"
+            android:layout_weight="0.23">
 
+        </androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/BuFavorites"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.95"
-        android:text="favorites" />
-
-    <EditText
-        android:id="@+id/ETSearchRecipe"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.94"
-        android:ems="10"
-        android:hint="Search Recipe"
-        android:inputType="text" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RVRecipes"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.23">
-
-    </androidx.recyclerview.widget.RecyclerView>
 
 
 </LinearLayout>

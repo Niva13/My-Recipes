@@ -1,44 +1,31 @@
 package com.example.recipes.fragments;
 
 import android.Manifest;
-import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.recipes.DataCallback;
 import com.example.recipes.Ingredient;
 import com.example.recipes.R;
 import com.example.recipes.Recepie;
 import com.example.recipes.activities.MainActivity;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,7 +37,7 @@ public class ShowRecipeFrag extends Fragment {
     private ImageView photo;
     private String photoPath;
 
-    boolean isRated = false;
+    boolean isRated;
     private Recepie recepie;
 
 
@@ -110,29 +97,21 @@ public class ShowRecipeFrag extends Fragment {
 
         ImageView star = view.findViewById(R.id.star);
         ImageView trash = view.findViewById(R.id.delete);
-        //final boolean[] isRated = {false};
-
 
         TextView recipeNameTextView = view.findViewById(R.id.RecipeName);
         TextView recipeDetailsTextView = view.findViewById(R.id.TheRecipe);
         photo = view.findViewById(R.id.imageView);
         ScrollView scrollView = view.findViewById(R.id.scrollView);
-
-
         Button close = view.findViewById(R.id.buttonClose);
-
-
-
         Bundle args = getArguments();
 
         if (args != null) {
-            String recipeName = args.getString("recipeName");
             Object details = args.get("recipeObject");
-
-
             DataModel model = (DataModel) details;
             recepie = model.getRecepie();
-            if(recepie.isFavorites()){
+            isRated = recepie.isFavorites();
+
+            if(isRated){
                 star.setImageResource(R.drawable.yellow_star);
             }else{
                 star.setImageResource(R.drawable.empy_star);
@@ -141,28 +120,20 @@ public class ShowRecipeFrag extends Fragment {
 
             if(!(recepie.getURL() == null))
             {
-
-                WebView webView = view.findViewById(R.id.webview);
-                WebSettings webSettings = webView.getSettings();
-                webSettings.setJavaScriptEnabled(true);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-                }
-
-                //String W = ("https://en.wikipedia.org/wiki/Labrador_Retriever");
                 String W = recepie.getURL();
-                webView.loadUrl(W);
+                Log.d("result" , W);
 
+                if(!(W == null)) {
 
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(W));
+                    startActivity(browserIntent);
+                }
 
             }else if(!(recepie.getPhotoPath() == null)){
 
                 scrollView.setVisibility(View.GONE);
                 photo.setVisibility(View.VISIBLE);
                 photoPath = "file://"+recepie.getPhotoPath();
-
-
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
@@ -183,33 +154,19 @@ public class ShowRecipeFrag extends Fragment {
                     }
                 }
 
-
-
-
-
             }else{
-
                 ArrayList<Ingredient> Ingredients = new ArrayList<>();
                 Ingredients = recepie.getIngredients();
-
                 for(Ingredient Ingredient : Ingredients) {
-                    recipeDetailsTextView.setText(recipeDetailsTextView.getText().toString() + Ingredient.getIngName() +" "+
-                            Ingredient.getAmount() + " " +Ingredient.getUnit() + "\n\n");
-
-
+                    recipeDetailsTextView.setText(recipeDetailsTextView.getText().toString() + Ingredient.getIngName() +"   "+ Ingredient.getAmount() + "   " +Ingredient.getUnit() + "\n");
                 }
-
             }
-
-
-
         }
-
-
 
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 isRated = !isRated;
 
 
@@ -222,7 +179,12 @@ public class ShowRecipeFrag extends Fragment {
                 }else{
                     star.setImageResource(R.drawable.empy_star);
                     recepie.setFavorites(false);
-                    mainActivity.RemoveFavoriteRecipes(recepie);
+                    mainActivity.RemoveFavoriteRecipes(recepie, new DataCallback() {
+                        @Override
+                        public void onDataReady(ArrayList<DataModel> data) {
+
+                        }
+                    });
 
                 }
 
@@ -237,7 +199,13 @@ public class ShowRecipeFrag extends Fragment {
                 mainActivity.DeleteRecepie(recepie, new DataCallback() {
                     @Override
                     public void onDataReady(ArrayList<DataModel> data) {
-                        Navigation.findNavController(v).navigate(R.id.action_showRecipeFrag_to_homePageFrag);
+                        try{
+                            Navigation.findNavController(v).navigate(R.id.action_showRecipeFrag_to_homePageFrag);
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
                     }
                 });
             }
@@ -261,7 +229,6 @@ public class ShowRecipeFrag extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 101) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with accessing the image
                 initializePhoto(getView());
             } else {
                 Toast.makeText(ShowRecipeFrag.this.getContext(), "Permission denied", Toast.LENGTH_SHORT).show();
@@ -273,6 +240,5 @@ public class ShowRecipeFrag extends Fragment {
         Uri photoUri = Uri.parse(photoPath);
         photo.setImageURI(photoUri);
     }
-
 
 }

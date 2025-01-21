@@ -8,15 +8,8 @@ public class Recepie implements Serializable{
     private ArrayList <Ingredient> ingredients;
     private String Name;
     private String photoPath;
-
     private String URL;
-
-
-
-    boolean isFavorites;
-
-
-
+    private boolean isFavorites;
 
     public Recepie(){
         this.isFavorites = false;
@@ -45,9 +38,6 @@ public class Recepie implements Serializable{
     public void setIngredients(ArrayList<Ingredient> ingredients) {
         this.ingredients = ingredients;
     }
-
-
-
 
     public String getName() {
         return Name;

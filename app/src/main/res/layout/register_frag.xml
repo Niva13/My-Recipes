@@ -4,11 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragments.RegisterFrag"
-
-
-
-    >
+    tools:context=".fragments.RegisterFrag">
 
     <TextView
         android:id="@+id/EmailReg"
@@ -16,15 +12,24 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:textSize="32dp"
-        android:text="Email:" />
+        android:text="Email:"
+        android:gravity="bottom"
+        android:layout_marginLeft="21dp"/>
 
     <EditText
         android:id="@+id/editTextTextEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/input_background"
         android:ems="10"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:hint="Email"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/PasswordReg"
@@ -32,15 +37,25 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:textSize="32dp"
-        android:text="Password:" />
+        android:text="Password:"
+        android:gravity="bottom"
+        android:layout_marginLeft="21dp"/>
 
     <EditText
         android:id="@+id/PasswordinputReg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/input_background"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginBottom="10dp"
+        android:hint="Password"
+        android:gravity="center"
+        />
 
     <TextView
         android:id="@+id/RePasswordReg"
@@ -48,15 +63,24 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:textSize="32dp"
-        android:text="Repassword:" />
+        android:text="Repassword:"
+        android:gravity="bottom"
+        android:layout_marginLeft="21dp"/>
 
     <EditText
         android:id="@+id/RePasswordinputReg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/input_background"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginBottom="10dp"
+        android:hint="Repassword"
+        android:gravity="center"/>
 
 
 
@@ -66,7 +90,9 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:textSize="32dp"
-        android:text="Phone:" />
+        android:text="Phone:"
+        android:gravity="bottom"
+        android:layout_marginLeft="21dp"/>
 
 
     <EditText
@@ -74,25 +100,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/input_background"
         android:ems="10"
-        android:inputType="phone" />
+        android:inputType="phone"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginBottom="10dp"
+        android:hint="Phone Number"
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/ErrorTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="" />
+        android:text=""
+        />
 
     <Button
         android:id="@+id/RegButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout_marginBottom="20dp"
         android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="1"
 
-        android:text="Reg" />
+        android:background="@drawable/button_background"
+        android:text="sign up" />
 
 
 </LinearLayout>

@@ -8,22 +8,17 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
-
+import android.widget.Toast;
 import com.example.recipes.DataCallback;
 import com.example.recipes.R;
 import com.example.recipes.activities.MainActivity;
-
 import java.util.ArrayList;
 
 /**
@@ -34,7 +29,7 @@ import java.util.ArrayList;
 public class HomePageFrag extends Fragment {
 
     private ArrayList<DataModel>dataset=new ArrayList<>();
-    private ArrayList<DataModel> dataSetFull;
+    private ArrayList<DataModel> favoritesSet=new ArrayList<>();
     private CustomeAdapter adapter;
 
     @Override
@@ -89,7 +84,6 @@ public class HomePageFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.home_page_frag, container, false);
         MainActivity mainActivity = (MainActivity) getActivity();
 
@@ -100,10 +94,6 @@ public class HomePageFrag extends Fragment {
         Button Favorites = view.findViewById(R.id.BuFavorites);
         RecyclerView RecipeRecycleView = view.findViewById(R.id.RVRecipes);
 
-
-
-
-        //mainActivity.readData(HomePageFrag.this.getContext(), view);
         mainActivity.getDataSet(HomePageFrag.this.getContext(), view, new DataCallback() {
             @Override
             public void onDataReady(ArrayList<DataModel> data) {
@@ -122,8 +112,6 @@ public class HomePageFrag extends Fragment {
                         RecipeRecycleView.setAdapter(adapter);
                     }
 
-
-
                 } else {
 
                 }
@@ -133,6 +121,15 @@ public class HomePageFrag extends Fragment {
 
 
 
+        mainActivity.getFavoriteSet(HomePageFrag.this.getContext(), view, new DataCallback() {
+            @Override
+            public void onDataReady(ArrayList<DataModel> data) {
+                if (data != null)
+                {
+                    favoritesSet = data;
+                }
+            }
+        });
 
 
 
@@ -153,7 +150,6 @@ public class HomePageFrag extends Fragment {
         });
 
 
-
         AddRecipeUrl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,9 +157,6 @@ public class HomePageFrag extends Fragment {
 
             }
         });
-
-
-
 
         SearchRecipe.addTextChangedListener(new TextWatcher() {
             @Override
@@ -173,9 +166,7 @@ public class HomePageFrag extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //mainActivity.filterList(s.toString());
                 adapter.filter(s.toString());
-
             }
 
             @Override
@@ -190,7 +181,13 @@ public class HomePageFrag extends Fragment {
         Favorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!(dataset.isEmpty())){
                 Navigation.findNavController(view).navigate(R.id.action_homePageFrag_to_favoritesFrag);
+                }
+                else {
+                    Toast.makeText(mainActivity, "There are not recipes at all!", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 

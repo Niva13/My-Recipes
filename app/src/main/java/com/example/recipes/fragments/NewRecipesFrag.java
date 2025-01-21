@@ -1,17 +1,11 @@
 package com.example.recipes.fragments;
 
-import static androidx.browser.customtabs.CustomTabsClient.getPackageName;
-
 import android.content.Context;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,14 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TableRow;
 import android.widget.Toast;
-
 import com.example.recipes.Ingredient;
 import com.example.recipes.R;
 import com.example.recipes.Recepie;
 import com.example.recipes.activities.MainActivity;
-
 import java.util.ArrayList;
 
 /**
@@ -42,7 +33,6 @@ public class NewRecipesFrag extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    //private Spinner unit;
     private Spinner NumofItems;
     int Num_Of_Items=0;
     private Recepie recipe;
@@ -100,7 +90,6 @@ public class NewRecipesFrag extends Fragment {
         Button SaveRecipe = view.findViewById(R.id.SaveRecipe);
         Button SaveNumItems = view.findViewById(R.id.SaveNumItems);
         NumofItems = view.findViewById(R.id.numOfItems);
-        //unit = view.findViewById(R.id.Unit);
         LinearLayout ll2 = view.findViewById(R.id.LL2);
 
 
@@ -218,7 +207,6 @@ public class NewRecipesFrag extends Fragment {
 
                         int resId1 = L.getId();
                         resId1=resId1+1;
-                        //String generatedIdName = String.valueOf(resId1);
                         EditText name = new EditText(NewRecipesFrag.this.getContext());
                         name.setHint("Name");
                         name.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT , 1));
@@ -226,7 +214,6 @@ public class NewRecipesFrag extends Fragment {
 
                         int resId2 = L.getId();
                         resId2=resId2+2;
-                        // generatedIdAmount = String.valueOf(resId2);
                         EditText amount = new EditText(context);
                         amount.setHint("Amount");
                         amount.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);

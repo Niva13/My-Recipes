@@ -1,22 +1,17 @@
 package com.example.recipes.fragments;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.example.recipes.DataCallback;
 import com.example.recipes.R;
 import com.example.recipes.activities.MainActivity;
-
 import java.util.ArrayList;
-import com.example.recipes.DataCallback;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +20,7 @@ import com.example.recipes.DataCallback;
  */
 public class FavoritesFrag extends Fragment  {
 
-    private ArrayList<DataModel> FavoriteDataSet;
+    private ArrayList<DataModel> FavoriteDataSet = new ArrayList<>();
 
     private CustomeAdapter adapter;
 
@@ -64,28 +59,23 @@ public class FavoritesFrag extends Fragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         MainActivity mainActivity = (MainActivity) getActivity();
-
         RecyclerView Favorite = view.findViewById(R.id.RVFavorite);
 
-        mainActivity.getFavorite(this.getContext(), view, new DataCallback() {
+        mainActivity.getFavoriteSet(this.getContext(), view, new DataCallback() {
             @Override
             public void onDataReady(ArrayList<DataModel> data) {
-                if (!(data.isEmpty()))
+                if (data != null)
                 {
-
                     FavoriteDataSet = data;
+
                     adapter = new CustomeAdapter (FavoritesFrag.this.getContext(),FavoriteDataSet);
                     LinearLayoutManager layoutManager = new LinearLayoutManager(FavoritesFrag.this.getContext());
 
@@ -97,6 +87,8 @@ public class FavoritesFrag extends Fragment  {
                         Favorite.setItemAnimator(new DefaultItemAnimator());
                         Favorite.setAdapter(adapter);
                     }
+                }
+                else{
 
                 }
 

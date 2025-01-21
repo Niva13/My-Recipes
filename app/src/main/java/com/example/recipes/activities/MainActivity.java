@@ -1,36 +1,23 @@
 package com.example.recipes.activities;
 
-
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.recipes.DataCallback;
 import com.example.recipes.R;
 import com.example.recipes.Recepie;
 import com.example.recipes.User;
-import com.example.recipes.fragments.CustomeAdapter;
 import com.example.recipes.fragments.DataModel;
-import com.example.recipes.fragments.HomePageFrag;
-import com.example.recipes.fragments.ShowRecipeFrag;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -41,11 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
@@ -72,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -331,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public ArrayList<DataModel> getFavorite(Context c, View v, DataCallback callback) {
+    public void getFavoriteSet(Context c, View v, DataCallback callback) {
         readFavorites(c, v, new DataCallback() {
             @Override
             public void onDataReady(ArrayList<DataModel> data) {
@@ -344,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        return favorites;
+
     }
 
     public void addFavoriteRecipes(Recepie recepie) {
@@ -366,12 +347,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void RemoveFavoriteRecipes(Recepie recepie) {
+    public void RemoveFavoriteRecipes(Recepie recepie,DataCallback callback) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users").child(U_id).child("favorites").child(recepie.getName());
         myRef.removeValue();
         if(recepie.getIngredients() != null){
             DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesM").child(recepie.getName());
+
             myRef1.setValue(recepie);
         }else if(recepie.getPhotoPath() != null){
             DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesP").child(recepie.getName());
@@ -380,7 +362,29 @@ public class MainActivity extends AppCompatActivity {
             DatabaseReference myRef1 = database.getReference("users").child(U_id).child("recipesURL").child(recepie.getName());
             myRef1.setValue(recepie);
         }
+
+        deleteFavorite(recepie.getName());
+        callback.onDataReady(favorites);
     }
+
+
+    public void deleteFavorite(String name){
+        for(DataModel dataModel: favorites){
+            if(dataModel.getRecepie().getName().equals(name)){
+                favorites.remove(dataModel);
+            }
+        }
+        for(DataModel dataModel: dataSet)
+        {
+            if(dataModel.getRecepie().getName().equals(name))
+            {
+                dataModel.getRecepie().setFavorites(false);
+            }
+        }
+    }
+
+
+
 
     public void DeleteRecepie(Recepie recepie,DataCallback callback) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -407,6 +411,12 @@ public class MainActivity extends AppCompatActivity {
         for(DataModel dataModel: dataSet){
             if(dataModel.getRecepie().getName().equals(name)){
                 dataSet.remove(dataModel);
+            }
+        }
+        for(DataModel dataModel: favorites)
+        {
+            if(dataModel.getRecepie().getName().equals(name)){
+                favorites.remove(dataModel);
             }
         }
     }

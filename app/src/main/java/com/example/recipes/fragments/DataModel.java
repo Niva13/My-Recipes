@@ -1,10 +1,6 @@
 package com.example.recipes.fragments;
 
-import com.example.recipes.Ingredient;
 import com.example.recipes.Recepie;
-
-import java.util.ArrayList;
-
 import java.io.Serializable;
 public class DataModel implements Serializable {
 

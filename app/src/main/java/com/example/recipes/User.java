@@ -1,16 +1,11 @@
 package com.example.recipes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class User {
-
-
     private  String phone;
-
     private  String email;
-
     private Map<String, Recepie> recipes; // Map to hold recipes by name
 
     public User() {

@@ -53,7 +53,14 @@ public class CustomeAdapter extends RecyclerView.Adapter<CustomeAdapter.MyViewHo
                 bundle.putString("recipeName", selectedRecipe.getName());
                 bundle.putSerializable("recipeObject", selectedRecipe.getDatamodel());
 
-                Navigation.findNavController(v).navigate(R.id.action_homePageFrag_to_showRecipeFrag, bundle);
+                try
+                {
+                    Navigation.findNavController(v).navigate(R.id.action_homePageFrag_to_showRecipeFrag, bundle);
+                }
+                catch (Exception e)
+                {
+                    Navigation.findNavController(v).navigate(R.id.action_favoritesFrag_to_showRecipeFrag, bundle);
+                }
             }
         });
 
@@ -82,9 +89,8 @@ public class CustomeAdapter extends RecyclerView.Adapter<CustomeAdapter.MyViewHo
 
 
     public void filter(String query) {
-        query = query.toLowerCase().trim();  // Clean up the query
+        query = query.toLowerCase().trim();
 
-        // If query is empty, reset the dataset to the original data
         if (query.isEmpty()) {
             dataSet.clear();
             dataSet.addAll(dataSetFull);  // Reset to the full dataset
